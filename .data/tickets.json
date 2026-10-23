@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-10-23T14:59:23.908Z",
+  "updatedAt": "2026-10-23T15:12:07.291Z",
   "storageType": "file-backed-json-store",
-  "nextIdCounter": 1052,
+  "nextIdCounter": 1064,
   "tickets": [
     {
       "id": "CC-1001",
@@ -17,7 +17,7 @@
       "studentEmail": "alex.chen@campus.edu",
       "status": "In Progress",
       "createdAt": "2026-10-23T06:43:55.956Z",
-      "updatedAt": "2026-10-23T14:59:23.815Z",
+      "updatedAt": "2026-10-23T15:12:07.208Z",
       "aiAnalysis": {
         "suggestedCategory": "Plumbing",
         "confidence": "High",
@@ -179,6 +179,14 @@
           "authorName": "Sarah Martinez (Triage Supervisor)",
           "content": "Confidential test note: Replaced valve seal on west wing riser.",
           "createdAt": "2026-10-23T14:59:23.815Z"
+        },
+        {
+          "id": "note-1792768327208",
+          "ticketId": "CC-1001",
+          "authorId": "user-staff-1",
+          "authorName": "Sarah Martinez (Triage Supervisor)",
+          "content": "Confidential test note: Replaced valve seal on west wing riser.",
+          "createdAt": "2026-10-23T15:12:07.208Z"
         }
       ],
       "blockers": []
@@ -3314,6 +3322,684 @@
           "ticketId": "CC-1051",
           "toStatus": "Submitted",
           "changedAt": "2026-10-23T14:59:23.906Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1052",
+      "title": "Plumbing Issue - Science & Engineering Complex",
+      "description": "Sink leaking continuously in lab 3",
+      "rawStudentInput": "Sink leaking continuously in lab 3",
+      "category": "Plumbing",
+      "categorySource": "student",
+      "location": "Lab 305",
+      "building": "Science & Engineering Complex",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Under Review",
+      "createdAt": "2026-10-23T15:12:07.211Z",
+      "updatedAt": "2026-10-23T15:12:07.247Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Plumbing operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.211Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.211Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327211",
+          "ticketId": "CC-1052",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.211Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        },
+        {
+          "id": "h-1792768327233",
+          "ticketId": "CC-1052",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T15:12:07.233Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "changedById": "user-staff-1",
+          "notes": "Verified on site"
+        },
+        {
+          "id": "h-1792768327235",
+          "ticketId": "CC-1052",
+          "fromStatus": "Under Review",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T15:12:07.235Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "changedById": "user-staff-1",
+          "notes": "Assigned to plumber"
+        },
+        {
+          "id": "h-1792768327237",
+          "ticketId": "CC-1052",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T15:12:07.237Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "changedById": "user-staff-1",
+          "notes": "Work commenced"
+        },
+        {
+          "id": "h-1792768327240",
+          "ticketId": "CC-1052",
+          "fromStatus": "In Progress",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T15:12:07.240Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "changedById": "user-staff-1",
+          "notes": "Work completed and tested"
+        },
+        {
+          "id": "h-1792768327243",
+          "ticketId": "CC-1052",
+          "fromStatus": "Resolved",
+          "toStatus": "Reopened",
+          "changedAt": "2026-10-23T15:12:07.243Z",
+          "changedBy": "Alex Chen (Student Reopening)",
+          "changedById": "user-student-1",
+          "notes": "Student reported failed repair: Pipe started dripping again when faucet pressure was turned to maximum."
+        },
+        {
+          "id": "h-1792768327245",
+          "ticketId": "CC-1052",
+          "fromStatus": "Reopened",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T15:12:07.245Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "changedById": "user-staff-1",
+          "notes": "Investigating recurring leak"
+        }
+      ],
+      "proofOfFix": {
+        "photoDataUri": "data:image/svg+xml;utf8,<svg><text>Fixed Pipe</text></svg>",
+        "summary": "Replaced compression washer and resealed valve joint with teflon tape.",
+        "uploadedAt": "2026-10-23T15:12:07.239Z",
+        "uploadedBy": "Sarah Martinez (Triage Supervisor)",
+        "uploadedById": "user-staff-1"
+      },
+      "resolvedAt": "2026-10-23T15:12:07.240Z",
+      "reopenReason": "Pipe started dripping again when faucet pressure was turned to maximum.",
+      "reopenedAt": "2026-10-23T15:12:07.243Z",
+      "reopenedBy": "Alex Chen",
+      "duplicateReviewed": true,
+      "duplicateReviewDecision": "confirmed",
+      "duplicateReviewedBy": "Sarah Martinez (Triage Supervisor)",
+      "duplicateReviewNote": "Confirmed identical leak to CC-1001"
+    },
+    {
+      "id": "CC-1053",
+      "title": "Electricity Issue - Science & Engineering Complex",
+      "description": "Live wire exposed with sparks and smoke near elevator doorway",
+      "rawStudentInput": "Live wire exposed with sparks and smoke near elevator doorway",
+      "category": "Electricity",
+      "categorySource": "student",
+      "location": "1st Floor Elevator Foyer",
+      "building": "Science & Engineering Complex",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.265Z",
+      "updatedAt": "2026-10-23T15:12:07.270Z",
+      "priorityRecommendation": {
+        "priority": "Emergency",
+        "reasons": [
+          "Direct life-safety or fire hazard detected",
+          "Accessibility barrier affecting mobility-impaired campus members"
+        ],
+        "factors": {
+          "safetyRisk": true,
+          "urgencyScore": 10,
+          "peopleAffectedEstimate": 50,
+          "accessibilityImpact": true,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.265Z"
+      },
+      "slaHoursTarget": 2,
+      "slaDeadline": "2026-10-23T17:12:07.265Z",
+      "isOverdue": false,
+      "blockers": [
+        {
+          "id": "blk-1792768327270",
+          "description": "Waiting for high-amperage 40A Schneider circuit breaker delivery from regional supplier",
+          "reportedAt": "2026-10-23T15:12:07.270Z",
+          "reportedBy": "Sarah Martinez (Triage Supervisor)"
+        }
+      ],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327265",
+          "ticketId": "CC-1053",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.265Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ],
+      "priorityOverride": {
+        "priority": "Emergency",
+        "reason": "Verified active electrical hazard in high-traffic elevator lobby during peak class changeover.",
+        "overriddenBy": "Sarah Martinez (Triage Supervisor)",
+        "overriddenById": "user-staff-1",
+        "overriddenAt": "2026-10-23T15:12:07.268Z"
+      }
+    },
+    {
+      "id": "CC-1054",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.271Z",
+      "updatedAt": "2026-10-23T15:12:07.271Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.271Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.271Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327271",
+          "ticketId": "CC-1054",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.271Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1055",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.273Z",
+      "updatedAt": "2026-10-23T15:12:07.273Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.273Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.273Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327273",
+          "ticketId": "CC-1055",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.273Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1056",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 401",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 401",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.275Z",
+      "updatedAt": "2026-10-23T15:12:07.275Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.275Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.275Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327275",
+          "ticketId": "CC-1056",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.275Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1057",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.277Z",
+      "updatedAt": "2026-10-23T15:12:07.277Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.277Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.277Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327277",
+          "ticketId": "CC-1057",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.277Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1058",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.278Z",
+      "updatedAt": "2026-10-23T15:12:07.278Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.278Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.278Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327278",
+          "ticketId": "CC-1058",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.278Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1059",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 401",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 401",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.280Z",
+      "updatedAt": "2026-10-23T15:12:07.280Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.280Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.280Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327280",
+          "ticketId": "CC-1059",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.280Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1060",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.283Z",
+      "updatedAt": "2026-10-23T15:12:07.283Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.283Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.283Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327283",
+          "ticketId": "CC-1060",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.283Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1061",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.285Z",
+      "updatedAt": "2026-10-23T15:12:07.285Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.285Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.285Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327285",
+          "ticketId": "CC-1061",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.285Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1062",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 401",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 401",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.287Z",
+      "updatedAt": "2026-10-23T15:12:07.287Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.287Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.287Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327287",
+          "ticketId": "CC-1062",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.287Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1"
+        }
+      ]
+    },
+    {
+      "id": "CC-1063",
+      "title": "Internet Connectivity Issue - Hostel Block C",
+      "description": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "rawStudentInput": "Wi-Fi signal drops constantly on laptop and phone in room 402",
+      "category": "Internet Connectivity",
+      "categorySource": "student",
+      "location": "Floor 4 West Wing",
+      "building": "Hostel Block C",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "studentMobile": "+1 (555) 392-8819",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T15:12:07.288Z",
+      "updatedAt": "2026-10-23T15:12:07.288Z",
+      "priorityRecommendation": {
+        "priority": "Medium",
+        "reasons": [
+          "Standard Internet Connectivity operational maintenance ticket"
+        ],
+        "factors": {
+          "safetyRisk": false,
+          "urgencyScore": 5,
+          "peopleAffectedEstimate": 1,
+          "accessibilityImpact": false,
+          "criticalServiceDisruption": false,
+          "alternativesAvailable": true,
+          "isOverdue": false
+        },
+        "calculatedAt": "2026-10-23T15:12:07.288Z"
+      },
+      "slaHoursTarget": 24,
+      "slaDeadline": "2026-10-24T15:12:07.288Z",
+      "isOverdue": false,
+      "blockers": [],
+      "internalNotes": [],
+      "statusHistory": [
+        {
+          "id": "h-1792768327288",
+          "ticketId": "CC-1063",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T15:12:07.288Z",
           "changedBy": "Alex Chen (Student)",
           "changedById": "user-student-1"
         }

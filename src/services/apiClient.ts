@@ -273,7 +273,7 @@ class ApiClient {
   public async reopenTicket(
     id: string,
     reason: string
-  ): Promise<{ success: boolean; ticket: Ticket; message: string }> {
+  ): Promise<{ success: boolean; ticket?: Ticket; message?: string; error?: string }> {
     return this.request(`/api/tickets/${encodeURIComponent(id)}/reopen`, {
       method: 'POST',
       body: JSON.stringify({ reason })

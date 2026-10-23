@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-23T14:59:23.853Z",
+  "updatedAt": "2026-10-23T15:12:07.259Z",
   "users": [
     {
       "id": "user-admin-1",
@@ -91,7 +91,7 @@
         "emergencyContactPhone": "+1 (555) 901-2244",
         "isComplete": true,
         "createdAt": "2026-10-23T14:54:23.309Z",
-        "updatedAt": "2026-10-23T14:59:23.841Z"
+        "updatedAt": "2026-10-23T15:12:07.249Z"
       }
     },
     {
@@ -482,6 +482,42 @@
       "userId": "user-responder-medical",
       "createdAt": "2026-10-23T14:59:23.853Z",
       "expiresAt": "2026-11-22T14:59:23.853Z"
+    },
+    {
+      "token": "a254a91fc10a146bffb295a11a3ae92caf834894a831e9156b2da8183edca49c",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T15:12:02.023Z",
+      "expiresAt": "2026-11-22T15:12:02.023Z"
+    },
+    {
+      "token": "d20e5815bb50689af82a7aa3d5f3b08dc30ad03846e3aae6c9215e1923c092c5",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T15:12:07.167Z",
+      "expiresAt": "2026-11-22T15:12:07.167Z"
+    },
+    {
+      "token": "cc37713b4eb7a3d55a54c49ddeb65d29c21f7c2d3b79a86899c09cffc3a2e0eb",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T15:12:07.188Z",
+      "expiresAt": "2026-11-22T15:12:07.188Z"
+    },
+    {
+      "token": "e62857171e26e371710af3ad4cb411007a62272db093a997c46342488ccdb3f0",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T15:12:07.197Z",
+      "expiresAt": "2026-11-22T15:12:07.197Z"
+    },
+    {
+      "token": "0a8e456f0ee1453b372b71438da0cebf59c5fbbe50c6ffdb31adbdbab680b248",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T15:12:07.207Z",
+      "expiresAt": "2026-11-22T15:12:07.207Z"
+    },
+    {
+      "token": "e9467babd2f2d7d6bfe13210ea57f3b9e17749ae8d5764ace904d70effc65214",
+      "userId": "user-responder-medical",
+      "createdAt": "2026-10-23T15:12:07.259Z",
+      "expiresAt": "2026-11-22T15:12:07.259Z"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-10-23T14:59:23.910Z",
-  "nextEmergencyCounter": 104,
+  "updatedAt": "2026-10-23T15:12:07.292Z",
+  "nextEmergencyCounter": 106,
   "emergencies": [
     {
       "id": "EMG-101",
@@ -194,6 +194,129 @@
       "acknowledgedByName": "Dr. Anita Rao (Campus Health Officer)",
       "respondingAt": "2026-10-23T14:59:23.856Z",
       "resolvedAt": "2026-10-23T14:59:23.857Z",
+      "resolvedBy": "Dr. Anita Rao (Campus Health Officer)",
+      "closureNotes": "Patient stabilized and transferred to campus health center. Vitals normal."
+    },
+    {
+      "id": "EMG-104",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "mobileNumber": "+1 (555) 392-8819",
+      "campus": "North Campus",
+      "building": "North Residential Hall",
+      "floor": "2nd Floor",
+      "room": "Room 204",
+      "emergencyType": "medical",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T15:11:01.404Z",
+      "assignedResponderZone": "North Residential Hall Immediate Response Sector",
+      "notificationAttempts": [
+        {
+          "id": "notif-EMG-104-med",
+          "channel": "Medical Health Desk",
+          "recipient": "medical.officer@campus.edu (Dr. Anita Rao)",
+          "status": "Delivered",
+          "sentAt": "2026-10-23T15:11:01.404Z",
+          "deliveredAt": "2026-10-23T15:11:01.404Z"
+        }
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-10-23T15:11:01.404Z",
+          "status": "Alert sent",
+          "actor": "Alex Chen (Student)",
+          "details": "Emergency alert confirmed. Prefilled profile and location sent to Medical Health Desk."
+        },
+        {
+          "timestamp": "2026-10-23T15:11:38.183Z",
+          "status": "Acknowledged",
+          "actor": "Sarah Martinez (Triage Supervisor) (Plumbing Maintenance Department)",
+          "details": "Responder verified alert and dispatched personnel"
+        },
+        {
+          "timestamp": "2026-10-23T15:11:40.597Z",
+          "status": "Responding",
+          "actor": "Sarah Martinez (Triage Supervisor) (staff)",
+          "details": "Status updated to Responding"
+        },
+        {
+          "timestamp": "2026-10-23T15:11:41.900Z",
+          "status": "Resolved",
+          "actor": "Sarah Martinez (Triage Supervisor) (staff)",
+          "details": "Status updated to Resolved"
+        }
+      ],
+      "acknowledgedAt": "2026-10-23T15:11:38.183Z",
+      "acknowledgedBy": "user-staff-1",
+      "acknowledgedByName": "Sarah Martinez (Triage Supervisor)",
+      "respondingAt": "2026-10-23T15:11:40.597Z",
+      "resolvedAt": "2026-10-23T15:11:41.900Z",
+      "resolvedBy": "Sarah Martinez (Triage Supervisor)",
+      "closureNotes": "Incident safely cleared"
+    },
+    {
+      "id": "EMG-105",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "mobileNumber": "+1 (555) 392-8819",
+      "campus": "North Campus",
+      "building": "Science & Engineering Complex",
+      "floor": "2nd Floor",
+      "room": "Physics Lab 202",
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 4.5,
+        "timestamp": "2026-10-23T15:12:07.250Z"
+      },
+      "emergencyType": "medical",
+      "description": "Student experiencing severe asthma attack in physics lab",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T15:12:07.250Z",
+      "assignedResponderZone": "Science & Engineering Complex Immediate Response Sector",
+      "notificationAttempts": [
+        {
+          "id": "notif-EMG-105-med",
+          "channel": "Medical Health Desk",
+          "recipient": "medical.officer@campus.edu (Dr. Anita Rao)",
+          "status": "Delivered",
+          "sentAt": "2026-10-23T15:12:07.250Z",
+          "deliveredAt": "2026-10-23T15:12:07.250Z"
+        }
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-10-23T15:12:07.250Z",
+          "status": "Alert sent",
+          "actor": "Alex Chen (Student)",
+          "details": "Emergency alert confirmed. Prefilled profile and location sent to Medical Health Desk."
+        },
+        {
+          "timestamp": "2026-10-23T15:12:07.260Z",
+          "status": "Acknowledged",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (University Health & Medical Center)",
+          "details": "Medical unit en route with oxygen and nebulizer kit."
+        },
+        {
+          "timestamp": "2026-10-23T15:12:07.262Z",
+          "status": "Responding",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "First responders arrived at Physics Lab 202."
+        },
+        {
+          "timestamp": "2026-10-23T15:12:07.264Z",
+          "status": "Resolved",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "Patient stabilized and transferred to campus health center. Vitals normal."
+        }
+      ],
+      "acknowledgedAt": "2026-10-23T15:12:07.260Z",
+      "acknowledgedBy": "user-responder-medical",
+      "acknowledgedByName": "Dr. Anita Rao (Campus Health Officer)",
+      "respondingAt": "2026-10-23T15:12:07.262Z",
+      "resolvedAt": "2026-10-23T15:12:07.264Z",
       "resolvedBy": "Dr. Anita Rao (Campus Health Officer)",
       "closureNotes": "Patient stabilized and transferred to campus health center. Vitals normal."
     }

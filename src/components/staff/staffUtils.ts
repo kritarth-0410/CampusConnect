@@ -71,5 +71,20 @@ export const DEPARTMENT_TECHNICIANS: Record<Department, string[]> = {
     'Maya Lin (NOC Wireless Engineer)',
     'Kevin Zhao (Network Ops)',
     'Campus Helpdesk Tech'
+  ],
+  'Campus Operations & General Maintenance': [
+    'David Miller (General Ops Lead)',
+    'Arthur Pendelton (Facilities Tech)',
+    'Operations On-Call Tech'
+  ],
+  'Campus Safety & Emergency Security': [
+    'Officer Sarah Jenkins (Campus Patrol)',
+    'Lieutenant Ray Alvarez (Safety Lead)',
+    'Duty Security Dispatch'
+  ],
+  'University Health & Medical Center': [
+    'Nurse Practitioner Lisa Wong',
+    'Dr. Aaron Brooks (Campus Health)',
+    'Campus First Aid Response'
   ]
 };
