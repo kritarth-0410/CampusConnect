@@ -6,7 +6,8 @@ import {
   PlayCircle,
   CheckCircle2,
   AlertTriangle,
-  Layers
+  Layers,
+  RotateCcw
 } from 'lucide-react';
 import { TicketCategory, TicketStatus } from '../../shared/types.js';
 
@@ -18,17 +19,18 @@ interface StaffMetricsProps {
     assigned: number;
     inProgress: number;
     resolved: number;
+    reopened?: number;
     byCategory: Record<TicketCategory, number>;
   };
-  duplicateCount: number;
-  activeStatusFilter: string;
-  onSelectStatusFilter: (status: string) => void;
+  duplicateCount?: number;
+  activeStatusFilter?: string;
+  onSelectStatusFilter?: (status: string) => void;
 }
 
 export const StaffMetrics: React.FC<StaffMetricsProps> = ({
   stats,
-  duplicateCount,
-  activeStatusFilter,
+  duplicateCount = 0,
+  activeStatusFilter = 'ALL',
   onSelectStatusFilter
 }) => {
   const cards = [
@@ -66,11 +68,18 @@ export const StaffMetrics: React.FC<StaffMetricsProps> = ({
       filter: 'Resolved',
       icon: CheckCircle2,
       color: 'text-emerald-700 bg-emerald-50 border-emerald-200'
+    },
+    {
+      label: 'Reopened',
+      value: stats.reopened || 0,
+      filter: 'Reopened',
+      icon: RotateCcw,
+      color: 'text-rose-700 bg-rose-50 border-rose-200'
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {cards.map((c) => {
         const Icon = c.icon;
         const isActive = activeStatusFilter === c.filter;
@@ -79,7 +88,7 @@ export const StaffMetrics: React.FC<StaffMetricsProps> = ({
           <button
             type="button"
             key={c.label}
-            onClick={() => onSelectStatusFilter(c.filter)}
+            onClick={() => onSelectStatusFilter && onSelectStatusFilter(c.filter)}
             className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${c.color} ${
               isActive
                 ? 'ring-2 ring-blue-600 shadow-sm scale-[1.02]'
@@ -87,10 +96,10 @@ export const StaffMetrics: React.FC<StaffMetricsProps> = ({
             }`}
           >
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-semibold text-slate-600">{c.label}</span>
-              <Icon size={16} className="shrink-0" />
+              <span className="text-[11px] font-semibold text-slate-600">{c.label}</span>
+              <Icon size={14} className="shrink-0" />
             </div>
-            <div className="text-2xl font-black tracking-tight text-slate-900">
+            <div className="text-xl font-black tracking-tight text-slate-900">
               {c.value}
             </div>
           </button>

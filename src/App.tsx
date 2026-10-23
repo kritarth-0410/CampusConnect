@@ -38,7 +38,7 @@ function AppContent() {
 
   // When user signs in or changes, adjust default view safely
   useEffect(() => {
-    if (user?.role === 'staff' && currentView === 'student') {
+    if ((user?.role === 'staff' || user?.role === 'responder') && currentView === 'student') {
       setCurrentView('staff');
     } else if (user?.role === 'admin' && currentView === 'student') {
       setCurrentView('admin');

@@ -40,6 +40,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       bg: 'bg-emerald-50 text-emerald-800 border-emerald-300 ring-emerald-500/15',
       icon: CheckCircle2,
       dot: 'bg-emerald-500'
+    },
+    'Reopened': {
+      bg: 'bg-rose-50 text-rose-800 border-rose-300 ring-rose-500/15',
+      icon: Clock,
+      dot: 'bg-rose-500 animate-pulse'
     }
   }[status] || {
     bg: 'bg-gray-100 text-gray-700 border-gray-300 ring-gray-500/10',

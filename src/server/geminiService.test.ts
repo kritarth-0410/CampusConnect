@@ -78,6 +78,40 @@ async function runTestSuite() {
   assert(internetResult.suggestedCategory === 'Internet Connectivity', 'Correctly classifies internet issue');
   assert(ALLOWED_CATEGORIES.includes(internetResult.suggestedCategory), 'Internet Connectivity is in allowed categories list');
 
+  const otherInput = {
+    description: 'Wooden study desk in library reading room has broken leg and splintered edge',
+    building: 'University Memorial Library',
+    location: 'Reading Room 2'
+  };
+  const otherResult = heuristicFallbackAnalysis(otherInput);
+  assert(otherResult.suggestedCategory === 'Other', 'Correctly classifies uncategorized furniture issue as "Other"');
+  assert(ALLOWED_CATEGORIES.includes(otherResult.suggestedCategory), '"Other" is in allowed categories list');
+
+  // Hindi & Hinglish input comprehension
+  const hindiPlumbing = {
+    description: 'Hostel bathroom me pani tapak raha hai aur nalka bohot loose hai',
+    building: 'Hostel Block B',
+    location: '2nd Floor Washroom'
+  };
+  const hindiPlumbingResult = heuristicFallbackAnalysis(hindiPlumbing);
+  assert(hindiPlumbingResult.suggestedCategory === 'Plumbing', 'Correctly identifies Plumbing from Hindi/Hinglish phrase "pani tapak raha hai"');
+
+  const hinglishElectric = {
+    description: 'Room 304 me bijli chali gayi hai aur switch board me spark ho raha hai',
+    building: 'Hostel Block A',
+    location: 'Room 304'
+  };
+  const hinglishElectricResult = heuristicFallbackAnalysis(hinglishElectric);
+  assert(hinglishElectricResult.suggestedCategory === 'Electricity', 'Correctly identifies Electricity from Hinglish phrase "bijli chali gayi / spark"');
+
+  const hindiCleanliness = {
+    description: 'Corridor me bohot kachra phel gaya hai dustbin overflow ho raha hai aur safai chahiye',
+    building: 'Main Academic Quad',
+    location: 'Ground Floor Corridor'
+  };
+  const hindiCleanResult = heuristicFallbackAnalysis(hindiCleanliness);
+  assert(hindiCleanResult.suggestedCategory === 'Cleanliness', 'Correctly identifies Cleanliness from Hindi phrase "kachra / safai chahiye"');
+
   // --------------------------------------------------------------------------
   // TEST SUITE 2: Department Routing
   // --------------------------------------------------------------------------
@@ -87,7 +121,8 @@ async function runTestSuite() {
     'Plumbing': 'Plumbing Maintenance Department',
     'Electricity': 'Electrical Systems & Safety Division',
     'Cleanliness': 'Campus Custodial & Sanitation Services',
-    'Internet Connectivity': 'IT & Network Infrastructure Team'
+    'Internet Connectivity': 'IT & Network Infrastructure Team',
+    'Other': 'Campus Operations & General Maintenance'
   };
 
   for (const [cat, expectedDept] of Object.entries(expectedRoutings)) {

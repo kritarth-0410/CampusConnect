@@ -1,0 +1,153 @@
+{
+  "updatedAt": "2026-10-23T14:59:23.910Z",
+  "nextClusterCounter": 14,
+  "clusters": [
+    {
+      "id": "CLUSTER-11",
+      "title": "High-Density Internet Connectivity Outage (10 Complaints)",
+      "category": "Internet Connectivity",
+      "building": "Hostel Block C",
+      "area": "Floor 4 West Wing",
+      "ticketIds": [
+        "CC-1018",
+        "CC-1019",
+        "CC-1020",
+        "CC-1021",
+        "CC-1022",
+        "CC-1023",
+        "CC-1024",
+        "CC-1025",
+        "CC-1026",
+        "CC-1027"
+      ],
+      "ticketCount": 10,
+      "firstReportTime": "2026-10-23T14:58:17.312Z",
+      "latestReportTime": "2026-10-23T14:58:17.322Z",
+      "status": "Resolved",
+      "priority": "High",
+      "priorityReason": "Automated 2-Hour Window Rule Triggered: 10 verified complaints submitted in Hostel Block C since 12:58:17 PM",
+      "auditLog": [
+        {
+          "action": "Cluster Created",
+          "timestamp": "2026-10-23T14:58:17.351Z",
+          "performedBy": "System Cluster Engine",
+          "note": "Detected 10 linked complaints in 2h window"
+        },
+        {
+          "action": "Resolved by Staff",
+          "timestamp": "2026-10-23T14:58:17.353Z",
+          "performedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "note": "Access point firmware update completed."
+        }
+      ]
+    },
+    {
+      "id": "CLUSTER-12",
+      "title": "High-Density Internet Connectivity Outage (20 Complaints)",
+      "category": "Internet Connectivity",
+      "building": "Hostel Block C",
+      "area": "Floor 4 West Wing",
+      "ticketIds": [
+        "CC-1018",
+        "CC-1019",
+        "CC-1020",
+        "CC-1021",
+        "CC-1022",
+        "CC-1023",
+        "CC-1024",
+        "CC-1025",
+        "CC-1026",
+        "CC-1027",
+        "CC-1030",
+        "CC-1031",
+        "CC-1032",
+        "CC-1033",
+        "CC-1034",
+        "CC-1035",
+        "CC-1036",
+        "CC-1037",
+        "CC-1038",
+        "CC-1039"
+      ],
+      "ticketCount": 20,
+      "firstReportTime": "2026-10-23T14:58:17.312Z",
+      "latestReportTime": "2026-10-23T14:58:30.539Z",
+      "status": "Resolved",
+      "priority": "High",
+      "priorityReason": "Automated 2-Hour Window Rule Triggered: 11 verified complaints submitted in Hostel Block C since 12:58:30 PM",
+      "auditLog": [
+        {
+          "action": "Cluster Created",
+          "timestamp": "2026-10-23T14:58:30.525Z",
+          "performedBy": "System Cluster Engine",
+          "note": "Detected 11 linked complaints in 2h window"
+        },
+        {
+          "action": "Resolved by Staff",
+          "timestamp": "2026-10-23T14:58:30.540Z",
+          "performedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "note": "Access point firmware update completed."
+        }
+      ]
+    },
+    {
+      "id": "CLUSTER-13",
+      "title": "High-Density Internet Connectivity Outage (30 Complaints)",
+      "category": "Internet Connectivity",
+      "building": "Hostel Block C",
+      "area": "Floor 4 West Wing",
+      "ticketIds": [
+        "CC-1018",
+        "CC-1019",
+        "CC-1020",
+        "CC-1021",
+        "CC-1022",
+        "CC-1023",
+        "CC-1024",
+        "CC-1025",
+        "CC-1026",
+        "CC-1027",
+        "CC-1030",
+        "CC-1031",
+        "CC-1032",
+        "CC-1033",
+        "CC-1034",
+        "CC-1035",
+        "CC-1036",
+        "CC-1037",
+        "CC-1038",
+        "CC-1039",
+        "CC-1042",
+        "CC-1043",
+        "CC-1044",
+        "CC-1045",
+        "CC-1046",
+        "CC-1047",
+        "CC-1048",
+        "CC-1049",
+        "CC-1050",
+        "CC-1051"
+      ],
+      "ticketCount": 30,
+      "firstReportTime": "2026-10-23T14:58:17.312Z",
+      "latestReportTime": "2026-10-23T14:59:23.906Z",
+      "status": "Resolved",
+      "priority": "High",
+      "priorityReason": "Automated 2-Hour Window Rule Triggered: 21 verified complaints submitted in Hostel Block C since 12:59:23 PM",
+      "auditLog": [
+        {
+          "action": "Cluster Created",
+          "timestamp": "2026-10-23T14:59:23.888Z",
+          "performedBy": "System Cluster Engine",
+          "note": "Detected 21 linked complaints in 2h window"
+        },
+        {
+          "action": "Resolved by Staff",
+          "timestamp": "2026-10-23T14:59:23.908Z",
+          "performedBy": "Sarah Martinez (Triage Supervisor) (staff)",
+          "note": "Access point firmware update completed."
+        }
+      ]
+    }
+  ]
+}

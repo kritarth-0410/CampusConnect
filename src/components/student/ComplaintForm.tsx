@@ -14,7 +14,10 @@ import {
   Building,
   MapPin,
   Camera,
-  Info
+  Info,
+  Check,
+  Eye,
+  Languages
 } from 'lucide-react';
 import {
   TICKET_CATEGORIES,
@@ -54,14 +57,15 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({
   onNavigateToTrack,
   prefillData
 }) => {
+  const { user } = useAuth();
+
   // Form fields
-  const [building, setBuilding] = useState(prefillData?.building || '');
-  const [location, setLocation] = useState(prefillData?.location || '');
+  const [building, setBuilding] = useState(prefillData?.building || user?.profile?.hostelOrBlock || '');
+  const [location, setLocation] = useState(prefillData?.location || (user?.profile?.roomNumber ? `${user.profile.floor ? `${user.profile.floor}, ` : ''}${user.profile.roomNumber}` : ''));
   const [description, setDescription] = useState(prefillData?.description || '');
   const [selectedCategory, setSelectedCategory] = useState<TicketCategory>('Plumbing');
+  const [customProblemTitle, setCustomProblemTitle] = useState('');
   const [categorySource, setCategorySource] = useState<'student' | 'ai_suggested'>('student');
-  const [studentName, setStudentName] = useState('');
-  const [studentEmail, setStudentEmail] = useState('');
 
   // Image upload
   const [imageBase64, setImageBase64] = useState<string | null>(null);
@@ -69,12 +73,15 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
 
-  // AI Analysis state
+  // AI Analysis state (One workflow only: Student Intake)
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [duplicateCandidates, setDuplicateCandidates] = useState<DuplicateCandidate[]>([]);
   const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  // Review step before final submission
+  const [isReviewStep, setIsReviewStep] = useState(false);
 
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,7 +93,6 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size < 5MB
     if (file.size > 5 * 1024 * 1024) {
       setImageError('Photo size exceeds 5MB. Please upload a smaller image.');
       return;
@@ -117,7 +123,7 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({
     setImageError(null);
   };
 
-  // Run Gemini Triage
+  // Run Gemini Triage (Hindi, English, or Hinglish)
   const handleAnalyzeWithAI = async () => {
     if (!description.trim()) {
       setAnalysisError('Please enter a description of the issue first.');
@@ -142,508 +148,504 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({
         setCategorySource('ai_suggested');
         setDuplicateCandidates(response.duplicateCandidates || []);
 
-        // Initialize follow-up answers structure
+        // Initialize follow-up questions
         const initialAnswers: Record<string, string> = {};
-        response.analysis.followUpQuestions.forEach((q, idx) => {
-          initialAnswers[`q_${idx}`] = '';
+        response.analysis.followUpQuestions.forEach((q) => {
+          initialAnswers[q] = '';
         });
         setFollowUpAnswers(initialAnswers);
       } else {
-        setAnalysisError(response.message || 'AI service analysis did not return results.');
+        setAnalysisError('AI analysis could not complete. You can select your category manually.');
       }
     } catch (err: any) {
-      setAnalysisError(err.message || 'Could not connect to AI triage service.');
+      setAnalysisError(err.message || 'AI service temporarily unavailable. Manual selection enabled.');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  // Handle follow up answer change
-  const handleAnswerChange = (key: string, val: string) => {
-    setFollowUpAnswers(prev => ({ ...prev, [key]: val }));
-  };
-
-  // Submit Complaint
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleProceedToReview = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
 
     if (!building.trim()) {
-      setSubmitError('Please select or specify a campus building.');
+      setSubmitError('Please select or specify the campus building.');
       return;
     }
-
     if (!location.trim()) {
-      setSubmitError('Please specify the exact room, floor, or area.');
+      setSubmitError('Please provide specific room, floor, or area details.');
       return;
     }
-
     if (!description.trim()) {
-      setSubmitError('Please provide a description of the issue.');
+      setSubmitError('Please describe the facility issue.');
       return;
     }
 
+    // Strict validation for 'Other' category requiring custom problem title
+    if (selectedCategory === 'Other' && !customProblemTitle.trim()) {
+      setSubmitError('When category is "Other", a custom Problem Title is required.');
+      return;
+    }
+
+    setIsReviewStep(true);
+  };
+
+  const handleFinalSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
-      if (!apiClient.getToken()) {
-        await apiClient.login({ email: 'alex.chen@campus.edu', password: 'StudentPass2026!' });
-      }
-
-      // Append follow-up answers into description if provided
-      let finalDescription = description.trim();
-      const answeredList: Record<string, string> = {};
-
-      if (aiAnalysis && aiAnalysis.followUpQuestions.length > 0) {
-        const addedNotes: string[] = [];
-        aiAnalysis.followUpQuestions.forEach((q, idx) => {
-          const ans = followUpAnswers[`q_${idx}`]?.trim();
-          if (ans) {
-            addedNotes.push(`Q: ${q}\nA: ${ans}`);
-            answeredList[q] = ans;
-          }
-        });
-
-        if (addedNotes.length > 0) {
-          finalDescription += `\n\n[Clarification Details Provided by Student]:\n${addedNotes.join('\n')}`;
-        }
-      }
-
       const res = await apiClient.submitComplaint({
-        description: finalDescription,
-        building: building.trim(),
+        description: description.trim(),
         location: location.trim(),
+        building: building.trim(),
         category: selectedCategory,
+        customProblemTitle: selectedCategory === 'Other' ? customProblemTitle.trim() : undefined,
         categorySource,
-        studentName: studentName.trim() || undefined,
-        studentEmail: studentEmail.trim() || undefined,
         imageBase64: imageBase64 || undefined,
         mimeType: imageMimeType || undefined,
         aiAnalysis: aiAnalysis || undefined,
-        studentFollowUpAnswers: Object.keys(answeredList).length > 0 ? answeredList : undefined
+        studentFollowUpAnswers: followUpAnswers
       });
 
       if (res.success && res.ticket) {
         onSuccess(res.ticket);
       } else {
-        setSubmitError(res.error || 'Failed to submit complaint.');
+        setSubmitError(res.error || 'Failed to submit complaint. Your input has been preserved.');
       }
     } catch (err: any) {
-      setSubmitError(err.message || 'Error communicating with ticket server.');
+      setSubmitError(err.message || 'Error communicating with server. Your input has been preserved.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      {/* Form Header */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white p-6 sm:p-8">
-        <div className="flex items-center gap-2 text-blue-200 text-xs font-semibold uppercase tracking-wider mb-2">
-          <Building size={14} />
-          <span>Student Maintenance Request</span>
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+      {/* Step Indicator */}
+      <div className="flex items-center justify-between pb-6 mb-6 border-b border-slate-200">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+            {isReviewStep ? 'Step 2 of 2: Review & Confirm' : 'Step 1 of 2: Issue Description'}
+          </span>
+          <h2 className="text-xl font-bold text-slate-900">
+            {isReviewStep ? 'Review Your Maintenance Complaint' : 'Report Campus Facility Issue'}
+          </h2>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Report a Campus Facility Issue
-        </h2>
-        <p className="text-blue-100 text-sm max-w-xl">
-          Report maintenance issues across all 4 campus categories. Our Gemini-powered triage automatically categorizes your complaint, routes it to the right department, and flags safety hazards.
-        </p>
+
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <Languages size={15} className="text-indigo-600" />
+          <span className="hidden sm:inline">Supports English, हिंदी, or Hinglish</span>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
-        {/* Error message */}
-        {submitError && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold">Submission Incomplete</p>
-              <p>{submitError}</p>
-            </div>
-          </div>
-        )}
+      {submitError && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-2 font-medium">
+          <AlertTriangle size={16} className="text-rose-600 shrink-0" />
+          <span>{submitError}</span>
+        </div>
+      )}
 
-        {/* Section 1: Location */}
-        <div className="space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <MapPin size={14} className="text-blue-600" />
-            <span>1. Location Details</span>
-          </h3>
+      {/* REVIEW STEP VIEW */}
+      {isReviewStep ? (
+        <div className="space-y-6">
+          <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-blue-900">
+              Verified Submission Summary
+            </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Campus Building <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  list="campus-buildings"
-                  value={building}
-                  onChange={(e) => setBuilding(e.target.value)}
-                  placeholder="e.g. Science & Engineering Complex"
-                  required
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800 bg-slate-50/50"
-                />
-                <datalist id="campus-buildings">
-                  {COMMON_CAMPUS_BUILDINGS.map((b) => (
-                    <option key={b} value={b} />
-                  ))}
-                </datalist>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <span className="text-slate-500 block">Category</span>
+                <span className="font-bold text-slate-900 flex items-center gap-2 mt-0.5">
+                  <CategoryBadge category={selectedCategory} />
+                  {selectedCategory === 'Other' && customProblemTitle && (
+                    <span className="text-slate-700 italic">({customProblemTitle})</span>
+                  )}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block">Assigned Routing</span>
+                <span className="font-semibold text-slate-900 mt-0.5 block">
+                  {CATEGORY_DEPARTMENT_ROUTING[selectedCategory]}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block">Building &amp; Specific Room</span>
+                <span className="font-semibold text-slate-900 mt-0.5 block">
+                  {building} • {location}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block">Reporting Student</span>
+                <span className="font-semibold text-slate-900 mt-0.5 block">
+                  {user?.name} ({user?.email})
+                </span>
               </div>
             </div>
 
+            <div className="pt-2 border-t border-blue-100 text-xs">
+              <span className="text-slate-500 block mb-1">Issue Description</span>
+              <p className="text-slate-800 bg-white p-3 rounded-xl border border-blue-100 font-medium">
+                {description}
+              </p>
+            </div>
+
+            {aiAnalysis && (
+              <div className="pt-2 text-xs">
+                <span className="text-slate-500 block mb-1">AI Concise Summary</span>
+                <p className="text-indigo-900 bg-indigo-50 p-2.5 rounded-xl border border-indigo-200 font-medium">
+                  {aiAnalysis.conciseSummary}
+                </p>
+              </div>
+            )}
+
+            {Object.keys(followUpAnswers).length > 0 && (
+              <div className="pt-2 text-xs space-y-1">
+                <span className="text-slate-500 block">Student Clarification Answers</span>
+                {Object.entries(followUpAnswers).map(([q, a]) => (
+                  <div key={q} className="bg-white p-2 rounded-lg border border-slate-200">
+                    <span className="text-slate-600 font-semibold">{q}: </span>
+                    <span className="text-slate-900">{a || 'Not specified'}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {imagePreviewUrl && (
+              <div className="pt-2 text-xs">
+                <span className="text-slate-500 block mb-1">Attached Photo Evidence</span>
+                <img
+                  src={imagePreviewUrl}
+                  alt="Complaint Preview"
+                  className="w-32 h-24 object-cover rounded-xl border border-slate-300"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+            <button
+              type="button"
+              onClick={() => setIsReviewStep(false)}
+              disabled={isSubmitting}
+              className="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              Back to Edit
+            </button>
+
+            <button
+              type="button"
+              onClick={handleFinalSubmit}
+              disabled={isSubmitting}
+              className="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" />
+                  <span>Submitting Ticket...</span>
+                </>
+              ) : (
+                <>
+                  <Check size={16} />
+                  <span>Confirm &amp; Submit Complaint</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* EDIT / FORM VIEW */
+        <form onSubmit={handleProceedToReview} className="space-y-6">
+          {/* Location Fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Room Number, Floor, or Area <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                <Building size={14} className="text-blue-600" />
+                <span>Campus Building <span className="text-rose-500">*</span></span>
+              </label>
+              <input
+                type="text"
+                list="campus-buildings"
+                value={building}
+                onChange={(e) => setBuilding(e.target.value)}
+                placeholder="Select or enter building..."
+                required
+                className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              />
+              <datalist id="campus-buildings">
+                {COMMON_CAMPUS_BUILDINGS.map((b) => (
+                  <option key={b} value={b} />
+                ))}
+              </datalist>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                <MapPin size={14} className="text-blue-600" />
+                <span>Exact Room / Wing / Area <span className="text-rose-500">*</span></span>
               </label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Room 204 or 2nd Floor West Washroom"
+                placeholder="e.g. Room 204, West Restroom, 3rd Floor Wing"
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800 bg-slate-50/50"
+                className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
-        </div>
 
-        {/* Section 2: Complaint Description */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
-              2. Describe the Maintenance Issue <span className="text-rose-500">*</span>
-            </label>
-            <span className="text-xs text-slate-400">
-              Natural language welcome
-            </span>
-          </div>
-
-          <textarea
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe what's wrong. For example: 'The washbasin pipe in the 2nd floor restroom is dripping water steadily onto the floor, making it slippery' or 'Projector outlet in Hall 101 sparked when plugged in'."
-            required
-            className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800 bg-slate-50/50 leading-relaxed"
-          />
-
-          {/* AI Triage Trigger CTA */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-            <button
-              type="button"
-              onClick={handleAnalyzeWithAI}
-              disabled={isAnalyzing || !description.trim()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300 transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
-            >
-              {isAnalyzing ? (
-                <>
-                  <Loader2 size={14} className="animate-spin text-indigo-600" />
-                  <span>Gemini AI is analyzing complaint...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles size={14} className="text-indigo-600" />
-                  <span>Ask Gemini to Categorize &amp; Check Missing Details</span>
-                </>
-              )}
-            </button>
-
-            <span className="text-[11px] text-slate-400 flex items-center gap-1">
-              <Info size={12} />
-              <span>AI suggests category &amp; asks follow-ups</span>
-            </span>
-          </div>
-
-          {analysisError && (
-            <p className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
-              {analysisError}
-            </p>
-          )}
-        </div>
-
-        {/* Section 3: AI Analysis Results Card (if generated) */}
-        {aiAnalysis && (
-          <div className="p-5 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
-                  <Sparkles size={15} />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-indigo-950 uppercase tracking-wider">
-                    Gemini AI Triage Assessment
-                  </h4>
-                  <p className="text-xs text-indigo-700">
-                    {aiAnalysis.isAiFallback ? 'Heuristic Rule Analysis' : 'Gemini 3.8 Flash Analysis'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
-                  Confidence: {aiAnalysis.confidence} ({Math.round(aiAnalysis.confidenceScore * 100)}%)
-                </span>
-                {aiAnalysis.urgencyAssessment === 'Safety Hazard' && (
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1">
-                    <ShieldAlert size={12} />
-                    Safety Hazard
-                  </span>
-                )}
-              </div>
+          {/* Issue Description */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-bold text-slate-700">
+                Describe the Facility Problem <span className="text-rose-500">*</span>
+              </label>
+              <span className="text-[11px] text-slate-400">
+                You can write in English, Hindi (हिंदी), or Hinglish
+              </span>
             </div>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="e.g. Washroom sink 2 leaking continuously, or 'pankha nahi chal raha hai lab 204 me', or 'eduroam wifi keeps dropping every two minutes'..."
+              rows={4}
+              required
+              className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500 leading-relaxed"
+            />
+          </div>
 
-            {/* Problem Summary & Routing */}
-            <div className="bg-white p-3.5 rounded-xl border border-indigo-100/80 space-y-2 text-xs">
+          {/* Photo Attachment & AI Triage Trigger */}
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="text-slate-400 font-medium">AI Problem Summary:</span>
-                <p className="text-slate-800 font-medium mt-0.5 text-sm">
-                  "{aiAnalysis.conciseSummary}"
+                <label className="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <Camera size={14} className="text-blue-600" />
+                  <span>Attach Photo Evidence (Optional)</span>
+                </label>
+                <p className="text-[11px] text-slate-500">
+                  Multimodal inspection verifies defects directly with facilities staff.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 pt-1 border-t border-slate-100 text-slate-600">
-                <div>
-                  <span className="text-slate-400">Suggested Category: </span>
-                  <CategoryBadge category={aiAnalysis.suggestedCategory} size="sm" />
-                </div>
-                <div>
-                  <span className="text-slate-400">Recommended Routing: </span>
-                  <span className="font-semibold text-slate-800">{aiAnalysis.recommendedDepartment}</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <label className="px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                  <Upload size={13} />
+                  <span>{imageBase64 ? 'Change Photo' : 'Upload Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleAnalyzeWithAI}
+                  disabled={isAnalyzing || !description.trim()}
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title="Run Gemini 3.8 Flash analysis"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={13} className="text-yellow-300" />
+                      <span>AI Triage Complaint</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* Missing details and follow-up inquiry */}
-            {aiAnalysis.followUpQuestions.length > 0 && (
-              <div className="space-y-2.5 pt-1">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-900">
-                  <FileQuestion size={14} className="text-indigo-600" />
-                  <span>Missing Details Identified — Clarify to speed up resolution:</span>
-                </div>
+            {imageError && (
+              <p className="text-xs text-rose-600 font-medium">{imageError}</p>
+            )}
 
-                <div className="space-y-2">
-                  {aiAnalysis.followUpQuestions.map((q, idx) => (
-                    <div key={idx} className="bg-white p-3 rounded-xl border border-indigo-100">
-                      <label className="block text-xs font-medium text-slate-800 mb-1.5">
-                        {q}
-                      </label>
+            {imagePreviewUrl && (
+              <div className="relative inline-block mt-2">
+                <img
+                  src={imagePreviewUrl}
+                  alt="Attachment Preview"
+                  className="w-24 h-24 object-cover rounded-xl border border-slate-300 shadow-2xs"
+                />
+                <button
+                  type="button"
+                  onClick={removePhoto}
+                  className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-rose-600 text-white hover:bg-rose-700 shadow-xs cursor-pointer"
+                  title="Remove photo"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* AI Analysis Feedback Panel (If triggered) */}
+          {aiAnalysis && (
+            <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={15} className="text-indigo-600" />
+                  <span className="text-xs font-bold text-indigo-950">
+                    Gemini AI Triage Assessment
+                  </span>
+                  {aiAnalysis.detectedLanguage && (
+                    <span className="text-[10px] bg-indigo-200/60 text-indigo-900 px-2 py-0.5 rounded font-semibold">
+                      Detected: {aiAnalysis.detectedLanguage}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200">
+                  Confidence: {aiAnalysis.confidence} ({Math.round(aiAnalysis.confidenceScore * 100)}%)
+                </span>
+              </div>
+
+              <div className="text-xs text-indigo-900 bg-white p-3 rounded-xl border border-indigo-100">
+                <span className="font-bold">Concise Summary: </span>
+                {aiAnalysis.conciseSummary}
+              </div>
+
+              {aiAnalysis.imageObservations && (
+                <div className="text-xs text-slate-700 bg-white p-3 rounded-xl border border-indigo-100">
+                  <span className="font-bold text-indigo-900">Photo Inspection: </span>
+                  {aiAnalysis.imageObservations}
+                </div>
+              )}
+
+              {/* Follow-up Clarification Questions (Updates same draft) */}
+              {aiAnalysis.followUpQuestions.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+                    <HelpCircle size={13} className="text-indigo-600" />
+                    <span>Follow-up Clarifications (Optional - Updates this complaint)</span>
+                  </span>
+                  {aiAnalysis.followUpQuestions.map((q) => (
+                    <div key={q} className="space-y-1">
+                      <label className="block text-[11px] font-medium text-slate-700">{q}</label>
                       <input
                         type="text"
-                        value={followUpAnswers[`q_${idx}`] || ''}
-                        onChange={(e) => handleAnswerChange(`q_${idx}`, e.target.value)}
-                        placeholder="Type answer here..."
-                        className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
+                        value={followUpAnswers[q] || ''}
+                        onChange={(e) =>
+                          setFollowUpAnswers({
+                            ...followUpAnswers,
+                            [q]: e.target.value
+                          })
+                        }
+                        placeholder="Your clarification..."
+                        className="w-full px-3 py-1.5 text-xs rounded-lg border border-indigo-200 bg-white focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
                       />
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Section 4: Duplicate Warning Alert (if any active matching tickets exist) */}
-        {duplicateCandidates.length > 0 && (
-          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 space-y-2">
-            <div className="flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900">
-                  Possible Existing Maintenance Report ({duplicateCandidates.length})
-                </h4>
-                <p className="text-xs text-amber-800 mt-0.5">
-                  A similar issue in this location has already been reported. You can check the existing ticket or proceed with your submission:
-                </p>
-              </div>
+              )}
             </div>
+          )}
 
-            <div className="space-y-1.5 pl-6">
-              {duplicateCandidates.map((dup) => (
-                <div
-                  key={dup.ticketId}
-                  className="bg-white/80 p-2.5 rounded-lg border border-amber-200 text-xs flex items-center justify-between gap-3"
-                >
-                  <div>
-                    <span className="font-mono font-bold text-blue-700 mr-2">{dup.ticketId}</span>
-                    <span className="font-medium text-slate-800">{dup.title}</span>
-                    <p className="text-[11px] text-slate-500 mt-0.5">{dup.matchReason}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateToTrack(dup.ticketId)}
-                    className="shrink-0 px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-900 rounded-md hover:bg-amber-200 transition-colors"
+          {/* Duplicate Candidates Advisory Warning */}
+          {duplicateCandidates.length > 0 && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                <AlertTriangle size={15} className="text-amber-600" />
+                <span>Possible Duplicate Complaints Detected in This Area</span>
+              </div>
+              <p className="text-[11px] text-amber-800">
+                Similar reports already exist for this location. You may still submit your complaint, and staff will review both:
+              </p>
+              <div className="space-y-1.5 pt-1">
+                {duplicateCandidates.map((dup) => (
+                  <div
+                    key={dup.ticketId}
+                    className="p-2.5 rounded-xl bg-white border border-amber-200 text-xs flex items-center justify-between gap-3"
                   >
-                    View Ticket
-                  </button>
-                </div>
-              ))}
+                    <div>
+                      <span className="font-bold text-slate-900">{dup.ticketId}: </span>
+                      <span className="text-slate-700">{dup.title}</span>
+                      <p className="text-[10px] text-amber-700">{dup.matchReason}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onNavigateToTrack(dup.ticketId)}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-bold underline shrink-0"
+                    >
+                      Track Existing
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Section 5: Category Selection (Explicit 4 categories) */}
-        <div className="space-y-2.5">
-          <div className="flex items-center justify-between">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
-              3. Category Selection <span className="text-rose-500">*</span>
+          {/* Category Selection (5 Categories) */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-2">
+              Maintenance Category <span className="text-rose-500">*</span>
             </label>
-            <span className="text-xs text-slate-400">
-              Exactly 4 supported campus categories
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            {TICKET_CATEGORIES.map((cat) => {
-              const isSelected = selectedCategory === cat;
-              return (
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {TICKET_CATEGORIES.map((cat) => (
                 <button
-                  type="button"
                   key={cat}
+                  type="button"
                   onClick={() => {
                     setSelectedCategory(cat);
                     setCategorySource('student');
                   }}
-                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between h-20 ${
-                    isSelected
-                      ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20 shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 bg-slate-50/40 text-slate-700'
+                  className={`p-3 rounded-xl border-2 text-xs font-bold transition-all text-center cursor-pointer ${
+                    selectedCategory === cat
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 shadow-xs'
+                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
-                  <CategoryBadge category={cat} size="sm" />
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2">
-                    <span>{isSelected ? '✓ Selected' : 'Choose'}</span>
-                  </div>
+                  {cat}
                 </button>
-              );
-            })}
-          </div>
-
-          <p className="text-[11px] text-slate-400">
-            Selected department routing:{' '}
-            <strong className="text-slate-700 font-medium">
-              {CATEGORY_DEPARTMENT_ROUTING[selectedCategory]}
-            </strong>
-          </p>
-        </div>
-
-        {/* Section 6: Optional Photo Upload */}
-        <div className="space-y-2.5">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-            <span>4. Attach Photo (Optional)</span>
-            <span className="text-xs text-slate-400 font-normal">Max 5MB (JPEG, PNG, WebP)</span>
-          </label>
-
-          {imagePreviewUrl ? (
-            <div className="relative rounded-xl border border-slate-200 p-2 bg-slate-50 flex items-center gap-4">
-              <img
-                src={imagePreviewUrl}
-                alt="Complaint attachment"
-                className="w-24 h-24 object-cover rounded-lg border border-slate-300"
-              />
-              <div className="space-y-1 text-xs">
-                <p className="font-semibold text-slate-800">Photo attached</p>
-                <p className="text-slate-500">Will be analyzed by Gemini AI vision and sent to technicians.</p>
-                <button
-                  type="button"
-                  onClick={removePhoto}
-                  className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-700 font-medium pt-1"
-                >
-                  <X size={14} />
-                  <span>Remove photo</span>
-                </button>
-              </div>
+              ))}
             </div>
-          ) : (
-            <label className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center cursor-pointer transition-colors block bg-slate-50/40 hover:bg-blue-50/20">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                  <Camera size={18} />
-                </div>
-                <div>
-                  <span className="text-xs font-semibold text-blue-600 hover:text-blue-700">
-                    Click to upload a photo
-                  </span>{' '}
-                  <span className="text-xs text-slate-500">or drag and drop</span>
-                </div>
-                <p className="text-[11px] text-slate-400">
-                  Photos help maintenance staff locate fixtures and bring correct tools
+
+            {/* Custom Problem Title (MANDATORY if 'Other' is chosen) */}
+            {selectedCategory === 'Other' && (
+              <div className="mt-3 p-3.5 rounded-xl bg-slate-50 border border-slate-300 space-y-1">
+                <label className="block text-xs font-bold text-slate-800">
+                  Custom Problem Title <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={customProblemTitle}
+                  onChange={(e) => setCustomProblemTitle(e.target.value)}
+                  placeholder="e.g. Broken laboratory fume hood sash or auditorium seat hinge"
+                  required
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-lg border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+                <p className="text-[10px] text-slate-500">
+                  A specific custom problem title is required when selecting 'Other'.
                 </p>
               </div>
-            </label>
-          )}
-
-          {imageError && (
-            <p className="text-xs text-rose-600 font-medium">{imageError}</p>
-          )}
-        </div>
-
-        {/* Section 7: Student Information (Optional) */}
-        <div className="space-y-3 pt-2 border-t border-slate-100">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
-            5. Contact Information (Optional)
-          </label>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Your Name
-              </label>
-              <input
-                type="text"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                placeholder="e.g. Alex Chen (leave blank for anonymous)"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Campus Email (for resolution notifications)
-              </label>
-              <input
-                type="email"
-                value={studentEmail}
-                onChange={(e) => setStudentEmail(e.target.value)}
-                placeholder="e.g. a.chen@campus.edu"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Submit Actions */}
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[11px] text-slate-400 text-center sm:text-left">
-            Tickets are assigned to certified campus facilities technicians.
-          </p>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                <span>Creating Ticket...</span>
-              </>
-            ) : (
-              <>
-                <span>Submit Maintenance Request</span>
-                <ArrowRight size={16} />
-              </>
             )}
-          </button>
-        </div>
-      </form>
+          </div>
+
+          {/* Submit Action */}
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+            <span className="text-xs text-slate-400">
+              Assigned to: <strong className="text-slate-700">{CATEGORY_DEPARTMENT_ROUTING[selectedCategory]}</strong>
+            </span>
+
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Review &amp; Confirm Complaint</span>
+              <ArrowRight size={15} />
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

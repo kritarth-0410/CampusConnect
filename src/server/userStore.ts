@@ -1,13 +1,13 @@
 /**
  * CampusConnect - User Management & Authentication Storage
- * File-backed persistence in .data/users.json with secure password hashing (PBKDF2/scrypt)
- * and token-based session management.
+ * File-backed persistence in .data/users.json with secure password hashing (PBKDF2/scrypt),
+ * token-based session management, and persistent student profile setup.
  */
 
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { Department, User, UserRole } from '../shared/types.js';
+import { Department, StudentProfile, User, UserRole } from '../shared/types.js';
 
 const DATA_DIR = path.resolve(process.cwd(), '.data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
@@ -15,6 +15,7 @@ const USERS_FILE = path.join(DATA_DIR, 'users.json');
 interface StoredUserRecord extends User {
   passwordHash: string;
   salt: string;
+  profile?: StudentProfile;
 }
 
 interface StoredSession {
@@ -60,6 +61,8 @@ export class UserStore {
             }
           }
         }
+        // Ensure responder accounts and profiles exist
+        this.ensureDefaultAccounts();
         console.log(`[UserStore] Loaded ${this.users.size} user accounts.`);
         return;
       }
@@ -89,6 +92,84 @@ export class UserStore {
     }
   }
 
+  private ensureDefaultAccounts() {
+    let changed = false;
+    const responders: Array<{
+      id: string;
+      name: string;
+      email: string;
+      password: string;
+      role: UserRole;
+      department: Department;
+    }> = [
+      {
+        id: 'user-responder-medical',
+        name: 'Dr. Anita Rao (Campus Health Officer)',
+        email: 'medical.officer@campus.edu',
+        password: 'ResponderPass2026!',
+        role: 'responder',
+        department: 'University Health & Medical Center'
+      },
+      {
+        id: 'user-responder-security',
+        name: 'Capt. Vikram Singh (Campus Security Chief)',
+        email: 'security.chief@campus.edu',
+        password: 'ResponderPass2026!',
+        role: 'responder',
+        department: 'Campus Safety & Emergency Security'
+      }
+    ];
+
+    for (const r of responders) {
+      if (!this.emailIndex.has(r.email.toLowerCase())) {
+        const salt = crypto.randomBytes(16).toString('hex');
+        const passwordHash = this.hashPassword(r.password, salt);
+        const record: StoredUserRecord = {
+          id: r.id,
+          name: r.name,
+          email: r.email.toLowerCase(),
+          passwordHash,
+          salt,
+          role: r.role,
+          department: r.department,
+          isActive: true,
+          createdAt: new Date().toISOString()
+        };
+        this.users.set(record.id, record);
+        this.emailIndex.set(record.email, record.id);
+        changed = true;
+      }
+    }
+
+    // Ensure student-1 has a verified profile seeded
+    const alex = this.users.get('user-student-1');
+    if (alex && !alex.profile) {
+      alex.profile = {
+        userId: alex.id,
+        fullName: 'Alex Chen',
+        enrollmentNumber: 'EN-2024-CS-088',
+        mobileNumber: '+1 (555) 392-8819',
+        collegeEmail: alex.email,
+        course: 'B.S. Computer Science',
+        yearOrSemester: 'Year 3 (Sem 5)',
+        campus: 'North Campus',
+        hostelOrBlock: 'North Residential Hall',
+        floor: '2nd Floor',
+        roomNumber: 'Room 204',
+        emergencyContactName: 'David Chen (Parent)',
+        emergencyContactPhone: '+1 (555) 901-2244',
+        isComplete: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      changed = true;
+    }
+
+    if (changed) {
+      this.persistToDisk();
+    }
+  }
+
   private seedDefaultUsers() {
     const defaultAccounts: Array<{
       id: string;
@@ -97,6 +178,7 @@ export class UserStore {
       password: string;
       role: UserRole;
       department?: Department;
+      profile?: StudentProfile;
     }> = [
       {
         id: 'user-admin-1',
@@ -146,18 +228,70 @@ export class UserStore {
         department: 'IT & Network Infrastructure Team'
       },
       {
+        id: 'user-responder-medical',
+        name: 'Dr. Anita Rao (Campus Health Officer)',
+        email: 'medical.officer@campus.edu',
+        password: 'ResponderPass2026!',
+        role: 'responder',
+        department: 'University Health & Medical Center'
+      },
+      {
+        id: 'user-responder-security',
+        name: 'Capt. Vikram Singh (Campus Security Chief)',
+        email: 'security.chief@campus.edu',
+        password: 'ResponderPass2026!',
+        role: 'responder',
+        department: 'Campus Safety & Emergency Security'
+      },
+      {
         id: 'user-student-1',
         name: 'Alex Chen',
         email: 'alex.chen@campus.edu',
         password: 'StudentPass2026!',
-        role: 'student'
+        role: 'student',
+        profile: {
+          userId: 'user-student-1',
+          fullName: 'Alex Chen',
+          enrollmentNumber: 'EN-2024-CS-088',
+          mobileNumber: '+1 (555) 392-8819',
+          collegeEmail: 'alex.chen@campus.edu',
+          course: 'B.S. Computer Science',
+          yearOrSemester: 'Year 3 (Sem 5)',
+          campus: 'North Campus',
+          hostelOrBlock: 'North Residential Hall',
+          floor: '2nd Floor',
+          roomNumber: 'Room 204',
+          emergencyContactName: 'David Chen (Parent)',
+          emergencyContactPhone: '+1 (555) 901-2244',
+          isComplete: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
       },
       {
         id: 'user-student-2',
         name: 'Priya Patel',
         email: 'priya.patel@campus.edu',
         password: 'StudentPass2026!',
-        role: 'student'
+        role: 'student',
+        profile: {
+          userId: 'user-student-2',
+          fullName: 'Priya Patel',
+          enrollmentNumber: 'EN-2023-EE-042',
+          mobileNumber: '+1 (555) 749-3021',
+          collegeEmail: 'priya.patel@campus.edu',
+          course: 'B.S. Electrical Engineering',
+          yearOrSemester: 'Year 4 (Sem 7)',
+          campus: 'Central Campus',
+          hostelOrBlock: 'South Quad Dorms',
+          floor: '3rd Floor',
+          roomNumber: 'Room 312',
+          emergencyContactName: 'Rekha Patel (Mother)',
+          emergencyContactPhone: '+1 (555) 441-9988',
+          isComplete: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
       }
     ];
 
@@ -172,6 +306,7 @@ export class UserStore {
         salt,
         role: acc.role,
         department: acc.department,
+        profile: acc.profile,
         isActive: true,
         createdAt: new Date().toISOString()
       };
@@ -226,6 +361,21 @@ export class UserStore {
     const passwordHash = this.hashPassword(password, salt);
     const id = `user-student-${Date.now()}`;
 
+    // Initialize with partial profile
+    const initialProfile: StudentProfile = {
+      userId: id,
+      fullName: name.trim(),
+      enrollmentNumber: '',
+      mobileNumber: '',
+      collegeEmail: cleanEmail,
+      course: '',
+      yearOrSemester: '',
+      campus: '',
+      isComplete: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
     const record: StoredUserRecord = {
       id,
       name: name.trim(),
@@ -233,6 +383,7 @@ export class UserStore {
       passwordHash,
       salt,
       role: 'student',
+      profile: initialProfile,
       isActive: true,
       createdAt: new Date().toISOString()
     };
@@ -280,12 +431,131 @@ export class UserStore {
     return deleted;
   }
 
+  /**
+   * Student Profile Management (Enforces authenticated user ownership)
+   */
+  public getStudentProfile(userId: string): StudentProfile | null {
+    const record = this.users.get(userId);
+    if (!record || record.role !== 'student') return null;
+
+    if (!record.profile) {
+      // Create empty profile structure if missing
+      record.profile = {
+        userId: record.id,
+        fullName: record.name,
+        enrollmentNumber: '',
+        mobileNumber: '',
+        collegeEmail: record.email,
+        course: '',
+        yearOrSemester: '',
+        campus: '',
+        isComplete: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      this.persistToDisk();
+    }
+    return record.profile;
+  }
+
+  public updateStudentProfile(
+    userId: string,
+    updates: Partial<StudentProfile>
+  ): { success: boolean; profile?: StudentProfile; error?: string } {
+    const record = this.users.get(userId);
+    if (!record) {
+      return { success: false, error: 'User account not found' };
+    }
+    if (record.role !== 'student') {
+      return { success: false, error: 'Only student accounts maintain student profiles' };
+    }
+
+    const existing = record.profile || {
+      userId: record.id,
+      fullName: record.name,
+      enrollmentNumber: '',
+      mobileNumber: '',
+      collegeEmail: record.email,
+      course: '',
+      yearOrSemester: '',
+      campus: '',
+      isComplete: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Validation
+    const fullName = updates.fullName !== undefined ? updates.fullName.trim() : existing.fullName;
+    const enrollmentNumber =
+      updates.enrollmentNumber !== undefined ? updates.enrollmentNumber.trim() : existing.enrollmentNumber;
+    const mobileNumber = updates.mobileNumber !== undefined ? updates.mobileNumber.trim() : existing.mobileNumber;
+    const course = updates.course !== undefined ? updates.course.trim() : existing.course;
+    const yearOrSemester =
+      updates.yearOrSemester !== undefined ? updates.yearOrSemester.trim() : existing.yearOrSemester;
+    const campus = updates.campus !== undefined ? updates.campus.trim() : existing.campus;
+
+    if (!fullName) {
+      return { success: false, error: 'Full name is required' };
+    }
+    if (!enrollmentNumber) {
+      return { success: false, error: 'Student ID / Enrollment Number is required' };
+    }
+    if (!mobileNumber || mobileNumber.length < 8) {
+      return { success: false, error: 'Valid registered mobile number is required' };
+    }
+    if (!course) {
+      return { success: false, error: 'Department / Course is required' };
+    }
+    if (!yearOrSemester) {
+      return { success: false, error: 'Year / Semester is required' };
+    }
+    if (!campus) {
+      return { success: false, error: 'Campus / Site selection is required' };
+    }
+
+    // Check completeness
+    const isComplete = Boolean(fullName && enrollmentNumber && mobileNumber && course && yearOrSemester && campus);
+
+    const updatedProfile: StudentProfile = {
+      ...existing,
+      fullName,
+      enrollmentNumber,
+      mobileNumber,
+      collegeEmail: record.email,
+      course,
+      yearOrSemester,
+      campus,
+      hostelOrBlock: updates.hostelOrBlock !== undefined ? updates.hostelOrBlock.trim() : existing.hostelOrBlock,
+      floor: updates.floor !== undefined ? updates.floor.trim() : existing.floor,
+      roomNumber: updates.roomNumber !== undefined ? updates.roomNumber.trim() : existing.roomNumber,
+      emergencyContactName:
+        updates.emergencyContactName !== undefined
+          ? updates.emergencyContactName.trim()
+          : existing.emergencyContactName,
+      emergencyContactPhone:
+        updates.emergencyContactPhone !== undefined
+          ? updates.emergencyContactPhone.trim()
+          : existing.emergencyContactPhone,
+      isComplete,
+      updatedAt: new Date().toISOString()
+    };
+
+    record.profile = updatedProfile;
+    record.name = fullName; // Sync user display name
+    this.persistToDisk();
+
+    return {
+      success: true,
+      profile: updatedProfile
+    };
+  }
+
   public createStaffMember(params: {
     name: string;
     email: string;
     password: string;
     department: Department;
-    role: 'staff' | 'admin';
+    role: 'staff' | 'admin' | 'responder';
   }): User {
     const cleanEmail = params.email.trim().toLowerCase();
     if (this.emailIndex.has(cleanEmail)) {
@@ -294,7 +564,7 @@ export class UserStore {
 
     const salt = crypto.randomBytes(16).toString('hex');
     const passwordHash = this.hashPassword(params.password, salt);
-    const id = `user-staff-${Date.now()}`;
+    const id = `user-${params.role}-${Date.now()}`;
 
     const record: StoredUserRecord = {
       id,
@@ -317,7 +587,7 @@ export class UserStore {
 
   public updateStaffMember(
     id: string,
-    updates: { department?: Department; isActive?: boolean; role?: 'staff' | 'admin' }
+    updates: { department?: Department; isActive?: boolean; role?: 'staff' | 'admin' | 'responder' }
   ): User | null {
     const record = this.users.get(id);
     if (!record) return null;
@@ -332,8 +602,8 @@ export class UserStore {
 
   public getAllStaff(): User[] {
     return Array.from(this.users.values())
-      .filter((u) => u.role === 'staff' || u.role === 'admin')
-      .map(this.toPublicUser);
+      .filter((u) => u.role === 'staff' || u.role === 'admin' || u.role === 'responder')
+      .map((r) => this.toPublicUser(r));
   }
 
   public getUserById(id: string): User | null {
@@ -348,6 +618,7 @@ export class UserStore {
       email: record.email,
       role: record.role,
       department: record.department,
+      profile: record.profile,
       isActive: record.isActive,
       createdAt: record.createdAt
     };

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-23T11:21:49.992Z",
+  "updatedAt": "2026-10-23T14:59:23.853Z",
   "users": [
     {
       "id": "user-admin-1",
@@ -74,7 +74,25 @@
       "salt": "5faf593726bdf4bc26c7ebb6f26c9f9f",
       "role": "student",
       "isActive": true,
-      "createdAt": "2026-10-23T11:17:22.043Z"
+      "createdAt": "2026-10-23T11:17:22.043Z",
+      "profile": {
+        "userId": "user-student-1",
+        "fullName": "Alex Chen",
+        "enrollmentNumber": "EN-2024-CS-088",
+        "mobileNumber": "+1 (555) 392-8819",
+        "collegeEmail": "alex.chen@campus.edu",
+        "course": "B.S. Computer Science",
+        "yearOrSemester": "Year 3 (Sem 5)",
+        "campus": "North Campus",
+        "hostelOrBlock": "North Residential Hall",
+        "floor": "2nd Floor",
+        "roomNumber": "Room 204",
+        "emergencyContactName": "David Chen (Parent)",
+        "emergencyContactPhone": "+1 (555) 901-2244",
+        "isComplete": true,
+        "createdAt": "2026-10-23T14:54:23.309Z",
+        "updatedAt": "2026-10-23T14:59:23.841Z"
+      }
     },
     {
       "id": "user-student-2",
@@ -84,7 +102,42 @@
       "salt": "e74e6f3ebea46a209630e5734633f473",
       "role": "student",
       "isActive": true,
-      "createdAt": "2026-10-23T11:17:22.050Z"
+      "createdAt": "2026-10-23T11:17:22.050Z",
+      "profile": {
+        "userId": "user-student-2",
+        "fullName": "Priya Patel",
+        "enrollmentNumber": "",
+        "mobileNumber": "",
+        "collegeEmail": "priya.patel@campus.edu",
+        "course": "",
+        "yearOrSemester": "",
+        "campus": "",
+        "isComplete": false,
+        "createdAt": "2026-10-23T14:57:23.977Z",
+        "updatedAt": "2026-10-23T14:57:23.977Z"
+      }
+    },
+    {
+      "id": "user-responder-medical",
+      "name": "Dr. Anita Rao (Campus Health Officer)",
+      "email": "medical.officer@campus.edu",
+      "passwordHash": "c384bbb46614d6bbdf6ca84d583d77a33ac8041f0d253bee3a904310e940234d02349c460f946571d9c5b3c16469ec8cd7f6b0f3140dc20b7114622d4424bfba",
+      "salt": "51e0001b92d024177373adc1b131fd01",
+      "role": "responder",
+      "department": "University Health & Medical Center",
+      "isActive": true,
+      "createdAt": "2026-10-23T14:54:23.301Z"
+    },
+    {
+      "id": "user-responder-security",
+      "name": "Capt. Vikram Singh (Campus Security Chief)",
+      "email": "security.chief@campus.edu",
+      "passwordHash": "8300013ec235ccd38533de8bd37515e25a17cd2202ffef027b2321b457b8d1c7e02a0d10581270adba8ffba9d1cb868a4a4b462dbe895905582fe7520c4d9544",
+      "salt": "4e9cb0a18625d021f9583963a2046b78",
+      "role": "responder",
+      "department": "Campus Safety & Emergency Security",
+      "isActive": true,
+      "createdAt": "2026-10-23T14:54:23.309Z"
     }
   ],
   "sessions": [
@@ -189,6 +242,246 @@
       "userId": "user-student-2",
       "createdAt": "2026-10-23T11:21:49.992Z",
       "expiresAt": "2026-11-22T11:21:49.992Z"
+    },
+    {
+      "token": "bd4817570c6808e8f45ea1e1516d73c4964d64de557f6f5bcb40923f7879fbae",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:36:03.453Z",
+      "expiresAt": "2026-11-22T14:36:03.453Z"
+    },
+    {
+      "token": "a0a46cfc0f6712b7cdb059661db3ee51a546066189b98701f8e548a0337b7c71",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:37:44.428Z",
+      "expiresAt": "2026-11-22T14:37:44.428Z"
+    },
+    {
+      "token": "34b5346ee8946a626e2da49054472e987d7bd35b9d4e39db86009676a018d461",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:37:44.445Z",
+      "expiresAt": "2026-11-22T14:37:44.445Z"
+    },
+    {
+      "token": "5655ada0310f869b4b43a69a363e3985890ae30566a80f505ce3cc7aafb38d21",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:37:44.452Z",
+      "expiresAt": "2026-11-22T14:37:44.452Z"
+    },
+    {
+      "token": "94b60bf30ab3d8893d56bfd035b68374d2e631c27734be7ce73351230b7076a8",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:37:44.473Z",
+      "expiresAt": "2026-11-22T14:37:44.473Z"
+    },
+    {
+      "token": "00bed10c7531e79446168477506e467c5f6fc12b6367a5405d41fa82032bdbd1",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:37:44.588Z",
+      "expiresAt": "2026-11-22T14:37:44.588Z"
+    },
+    {
+      "token": "7438b452a56304e42565067447dd1f4986bf73976b98f3158b6589e64fc68a50",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:37:44.604Z",
+      "expiresAt": "2026-11-22T14:37:44.604Z"
+    },
+    {
+      "token": "3133dfaf6a061396436bc1dd9a168fb84a1591c2f5f21bbb95b892aaad003591",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:37:44.614Z",
+      "expiresAt": "2026-11-22T14:37:44.614Z"
+    },
+    {
+      "token": "f2f60f9789a26253d8b001bd5c058fcb9350f45e485a8297e782f983ba9693a0",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:37:44.622Z",
+      "expiresAt": "2026-11-22T14:37:44.622Z"
+    },
+    {
+      "token": "4ba470cf36059c25818671c25f5306ba16eb685d54bf25d1e2c858351867b673",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:39:24.081Z",
+      "expiresAt": "2026-11-22T14:39:24.081Z"
+    },
+    {
+      "token": "da910f5a5dd55024a2097b6ff6a68191eb7295a2b2d8a41bf983d40d3dce68a5",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:39:24.099Z",
+      "expiresAt": "2026-11-22T14:39:24.099Z"
+    },
+    {
+      "token": "826f68d4c56539bda2233159a1619a4d207d2a3ff7bf13b283b414e6387d18d7",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:39:24.107Z",
+      "expiresAt": "2026-11-22T14:39:24.107Z"
+    },
+    {
+      "token": "24ba352d8ac22d085d2272f278ce0940a89f6c28cf8b0394cde7adc6e60ef281",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:39:24.116Z",
+      "expiresAt": "2026-11-22T14:39:24.116Z"
+    },
+    {
+      "token": "86e8b116191eaa6dd1f6ee8028b4aa6fbd11622759356974c60944671c0392a6",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:54:23.321Z",
+      "expiresAt": "2026-11-22T14:54:23.321Z"
+    },
+    {
+      "token": "bfccf3398e3909f0d15bfc530d4944f8ae09f8906ceaf0987d6b60e8323e6cc5",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:54:23.337Z",
+      "expiresAt": "2026-11-22T14:54:23.337Z"
+    },
+    {
+      "token": "51aefcaf9691f98760d1b0ec6b3e9403dc5179a5ef70c5985a1a79c63123fc5f",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:54:23.345Z",
+      "expiresAt": "2026-11-22T14:54:23.345Z"
+    },
+    {
+      "token": "3edc4924e12a1f5727220d86de473d6099e48f89750a2d7cc2ef6c56d1b96fb0",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:54:23.356Z",
+      "expiresAt": "2026-11-22T14:54:23.356Z"
+    },
+    {
+      "token": "b66d3db8daad9b745d5f1cbdab4930b03cea3e08e51f751abaf3a03c18b617f7",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:55:20.362Z",
+      "expiresAt": "2026-11-22T14:55:20.362Z"
+    },
+    {
+      "token": "f4dd71753d70015411da6b3162ee511f711eecfd8c5bb0cc12d8adb10d9795bb",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:55:20.379Z",
+      "expiresAt": "2026-11-22T14:55:20.379Z"
+    },
+    {
+      "token": "a43753696d595395e8deff744f07b36141b48eb4fed540e78e25aa94a70e1002",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:55:20.389Z",
+      "expiresAt": "2026-11-22T14:55:20.389Z"
+    },
+    {
+      "token": "ebf05d1a732004c1c7b454da1c8cef4bc92264d41ec158b417f011e362a61145",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:55:20.398Z",
+      "expiresAt": "2026-11-22T14:55:20.398Z"
+    },
+    {
+      "token": "3565f316d7b940725b2cbeb8f11e6f56b40c24f14d4bd467534b252c38d59dcd",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:57:23.922Z",
+      "expiresAt": "2026-11-22T14:57:23.922Z"
+    },
+    {
+      "token": "7d84c56a53d80adea5ed4e04b0e6d9e4b41d2ab98651baba8eff0c3174e1a210",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:57:23.939Z",
+      "expiresAt": "2026-11-22T14:57:23.939Z"
+    },
+    {
+      "token": "207d23c5c3186148669479dc6c866bf79625acf6beaed26682158302875fcb94",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:57:23.948Z",
+      "expiresAt": "2026-11-22T14:57:23.948Z"
+    },
+    {
+      "token": "90bc7a2e8a60a07e5c1d67c8f9adc63cf8312fd747ff6d71585d87cf76ea9f22",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:57:23.961Z",
+      "expiresAt": "2026-11-22T14:57:23.961Z"
+    },
+    {
+      "token": "7a20e3326cba4612f75037639b81a3e1a34a871ce90c7dd9c7942f831bbaa5e2",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:58:17.240Z",
+      "expiresAt": "2026-11-22T14:58:17.240Z"
+    },
+    {
+      "token": "dff8016b78be810e725069b3586a0ae6ccc722f51dedefaba04692ee44d2ba49",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:58:17.257Z",
+      "expiresAt": "2026-11-22T14:58:17.257Z"
+    },
+    {
+      "token": "c9b73e3ddeccb3f00380c7da88a105dc6fb295af4edf303f56c2589462b4622e",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:58:17.270Z",
+      "expiresAt": "2026-11-22T14:58:17.270Z"
+    },
+    {
+      "token": "97b1ea5a62b36797b93eff32473cd2680ec3a84b850df1ded2461873bddcba1a",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:58:17.280Z",
+      "expiresAt": "2026-11-22T14:58:17.280Z"
+    },
+    {
+      "token": "34fd21fc132df4dd9de1cdac88ad30e079548c25e93849cd70a707cae60d506a",
+      "userId": "user-responder-medical",
+      "createdAt": "2026-10-23T14:58:17.304Z",
+      "expiresAt": "2026-11-22T14:58:17.304Z"
+    },
+    {
+      "token": "5d0f76304bbeb94c8571e342e3171eb9e995e9896639fec173acbd566f6bbd11",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:58:30.436Z",
+      "expiresAt": "2026-11-22T14:58:30.436Z"
+    },
+    {
+      "token": "e1208df5b5abf0d38bbe6ec14d6b133bb025b3f2e41c740063013a3e82d4646a",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:58:30.452Z",
+      "expiresAt": "2026-11-22T14:58:30.452Z"
+    },
+    {
+      "token": "4aee618590d4417dba6f338df5dd12b48119734f75dd27a595d3492410d747fd",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:58:30.460Z",
+      "expiresAt": "2026-11-22T14:58:30.460Z"
+    },
+    {
+      "token": "b6ab94c61c763cacfa62afb379356ff474b3f5058656649b2a261f70d668eb06",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:58:30.468Z",
+      "expiresAt": "2026-11-22T14:58:30.468Z"
+    },
+    {
+      "token": "2c848ad1196a7d12da8a3f4035066a8610eabc17479cc95ba2cb6389e28c1e96",
+      "userId": "user-responder-medical",
+      "createdAt": "2026-10-23T14:58:30.496Z",
+      "expiresAt": "2026-11-22T14:58:30.496Z"
+    },
+    {
+      "token": "face5ded647314eda37eaa90504abeeec56dc76da3539028f0e5a38b7311851f",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T14:59:23.776Z",
+      "expiresAt": "2026-11-22T14:59:23.776Z"
+    },
+    {
+      "token": "2c153dc62e82d93dc4d99bd6bee0d834f6d2f79dbfa32c1e9a3f02dc9c7e03e4",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T14:59:23.793Z",
+      "expiresAt": "2026-11-22T14:59:23.793Z"
+    },
+    {
+      "token": "4edb1cc3d9f99d82fc9a4d5817a70a6f8c8c3b4ecd375f15a1d7a14db61f7a54",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T14:59:23.804Z",
+      "expiresAt": "2026-11-22T14:59:23.804Z"
+    },
+    {
+      "token": "0a538bec062cb2fea26d904e37092f18dc497c707a9e4240cbf09c94911a3866",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T14:59:23.814Z",
+      "expiresAt": "2026-11-22T14:59:23.814Z"
+    },
+    {
+      "token": "3b5dfe868d687d7451c1c54c891e90cec2dc79bb4d6890e41a059b144147c525",
+      "userId": "user-responder-medical",
+      "createdAt": "2026-10-23T14:59:23.853Z",
+      "expiresAt": "2026-11-22T14:59:23.853Z"
     }
   ]
 }

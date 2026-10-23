@@ -114,9 +114,14 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       });
 
       await new Promise((r) => setTimeout(r, 1200));
+      // Submit required Proof of Fix before marking Resolved
+      await apiClient.submitProofOfFix(newId, {
+        summary: 'Replaced drain seal and tightened fixture flange. Tested leak-free under high pressure.',
+        photoDataUri: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"><rect width="300" height="200" fill="%2310b981"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="16" font-family="sans-serif">Repaired Fitting Verified</text></svg>'
+      });
       await apiClient.updateStatus(newId, {
         status: 'Resolved',
-        notes: 'Drain pipe fitting replaced and floor dried. Issue fully resolved.'
+        notes: 'Drain pipe fitting replaced and floor dried. Proof of fix verified.'
       });
 
       // 7. Student checks progress timeline

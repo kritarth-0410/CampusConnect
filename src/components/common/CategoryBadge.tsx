@@ -35,6 +35,11 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
       bg: 'bg-indigo-50 text-indigo-700 border-indigo-200 ring-indigo-500/10',
       icon: Wifi,
       dot: 'bg-indigo-500'
+    },
+    'Other': {
+      bg: 'bg-purple-50 text-purple-700 border-purple-200 ring-purple-500/10',
+      icon: Wrench,
+      dot: 'bg-purple-500'
     }
   }[category] || {
     bg: 'bg-slate-50 text-slate-700 border-slate-200 ring-slate-500/10',

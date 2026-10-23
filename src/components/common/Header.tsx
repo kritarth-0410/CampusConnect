@@ -11,7 +11,8 @@ import {
   User as UserIcon,
   Shield,
   GraduationCap,
-  Sparkles
+  Sparkles,
+  Siren
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 
@@ -45,18 +46,24 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
             CAMPUS DISPATCH
           </span>
-          <span className="hidden sm:inline">Active facility management for Plumbing, Electricity, Cleanliness & Internet.</span>
+          <span className="hidden sm:inline">Active facility management for Plumbing, Electricity, Cleanliness, Internet &amp; Other.</span>
         </div>
         <div className="flex items-center gap-4 text-[11px]">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400 font-medium">Gemini 3.8 Flash Active</span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                serverStatus?.geminiConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+              }`}
+            />
+            <span className={serverStatus?.geminiConfigured ? 'text-emerald-400 font-medium' : 'text-amber-400 font-medium'}>
+              {serverStatus?.geminiConfigured ? 'Gemini 3.8 Flash (Intake Triage)' : 'Deterministic Rules (Intake Active)'}
+            </span>
           </span>
           <span className="hidden md:flex items-center gap-1 text-slate-400">
             <Server size={11} />
-            <span>Server File Database</span>
+            <span>Persistent File DB</span>
           </span>
-          <span className="text-amber-300 font-mono">Facilities Desk: ext. 4444</span>
+          <span className="text-amber-300 font-mono">Facilities Desk: ext. 4444 • Emergency: 911 / 112</span>
         </div>
       </div>
 
@@ -66,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Brand */}
           <div
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => onNavigate(user?.role === 'staff' ? 'staff' : user?.role === 'admin' ? 'admin' : 'student')}
+            onClick={() => onNavigate(user?.role === 'staff' || user?.role === 'responder' ? 'staff' : user?.role === 'admin' ? 'admin' : 'student')}
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-indigo-600 to-sky-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
               <Building2 className="w-5 h-5" />
@@ -81,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-500 hidden sm:block">
-                AI Maintenance Triage &amp; Resolution Platform
+                AI Maintenance Triage &amp; Emergency Dispatch
               </p>
             </div>
           </div>
@@ -117,8 +124,8 @@ export const Header: React.FC<HeaderProps> = ({
               </>
             )}
 
-            {/* If Staff or Admin */}
-            {(user?.role === 'staff' || user?.role === 'admin') && (
+            {/* If Staff or Responder */}
+            {(user?.role === 'staff' || user?.role === 'responder' || user?.role === 'admin') && (
               <button
                 onClick={() => onNavigate('staff')}
                 className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -127,8 +134,17 @@ export const Header: React.FC<HeaderProps> = ({
                     : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/60'
                 }`}
               >
-                <HardHat size={15} className="text-amber-400" />
-                <span>Staff Dispatch Board</span>
+                {user.role === 'responder' ? (
+                  <>
+                    <Siren size={15} className="text-rose-400" />
+                    <span>Responder &amp; Dispatch Board</span>
+                  </>
+                ) : (
+                  <>
+                    <HardHat size={15} className="text-amber-400" />
+                    <span>Staff Dispatch Board</span>
+                  </>
+                )}
               </button>
             )}
 
@@ -148,15 +164,15 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </nav>
 
-          {/* Right Action Controls: Demo Walkthrough + User Auth Profile */}
+          {/* Right Action Controls */}
           <div className="flex items-center gap-2">
             <button
               onClick={onOpenDemoGuide}
               className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-xs transition-all cursor-pointer"
-              title="Launch the 7-Step Hackathon Demo Walkthrough"
+              title="Launch the Interactive CampusConnect Tour"
             >
               <PlaySquare size={14} className="text-purple-200" />
-              <span>Demo Walkthrough</span>
+              <span>System Tour</span>
             </button>
 
             {user ? (
@@ -168,6 +184,8 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="text-[10px] text-slate-500 font-medium">
                     {user.role === 'admin'
                       ? 'Administrator'
+                      : user.role === 'responder'
+                      ? `Responder • ${user.department || 'Emergency Desk'}`
                       : user.role === 'staff'
                       ? `Staff • ${user.department || 'Triage'}`
                       : 'Campus Student'}

@@ -13,12 +13,18 @@ import {
   Sparkles,
   ArrowRight,
   HardHat,
-  MessageSquare
+  MessageSquare,
+  Lock,
+  Camera,
+  RotateCcw,
+  AlertTriangle,
+  FileCheck
 } from 'lucide-react';
 import { Ticket, TicketStatus, TICKET_STATUSES } from '../../shared/types.js';
 import { CategoryBadge } from '../common/CategoryBadge.js';
 import { StatusBadge } from '../common/StatusBadge.js';
 import { apiClient } from '../../services/apiClient.js';
+import { useAuth } from '../../context/AuthContext.js';
 
 interface TicketTrackerProps {
   initialTicketId?: string;
@@ -29,16 +35,18 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
   initialTicketId = '',
   onNavigateToNewComplaint
 }) => {
+  const { user } = useAuth();
   const [ticketIdInput, setTicketIdInput] = useState(initialTicketId);
   const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [recentLookups, setRecentLookups] = useState<string[]>([
-    'CC-1001',
-    'CC-1002',
-    'CC-1003',
-    'CC-1004'
-  ]);
+
+  // Reopen Modal State
+  const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
+  const [reopenReason, setReopenReason] = useState('');
+  const [isReopening, setIsReopening] = useState(false);
+  const [reopenError, setReopenError] = useState<string | null>(null);
+  const [reopenSuccess, setReopenSuccess] = useState<string | null>(null);
 
   const fetchTicket = async (idToFetch: string) => {
     if (!idToFetch.trim()) {
@@ -46,24 +54,20 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
       return;
     }
 
+    if (!user) {
+      setErrorMessage('Please sign in to track maintenance tickets.');
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
+    setReopenSuccess(null);
 
     try {
-      if (!apiClient.getToken()) {
-        await apiClient.login({ email: 'alex.chen@campus.edu', password: 'StudentPass2026!' });
-      }
-
-      const res = await apiClient.getTicketById(idToFetch);
+      const res = await apiClient.getTicketById(idToFetch.trim());
       if (res.success && res.ticket) {
         setCurrentTicket(res.ticket);
         setTicketIdInput(res.ticket.id);
-
-        // Update recent lookups
-        setRecentLookups((prev) => {
-          const filtered = prev.filter((id) => id !== res.ticket!.id);
-          return [res.ticket!.id, ...filtered].slice(0, 5);
-        });
       } else {
         setErrorMessage(res.error || `No ticket found with ID ${idToFetch}`);
         setCurrentTicket(null);
@@ -87,7 +91,34 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
     fetchTicket(ticketIdInput);
   };
 
-  // Status timeline step calculation
+  const handleReopenSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentTicket) return;
+    if (!reopenReason.trim()) {
+      setReopenError('Please describe why the repair was unsuccessful.');
+      return;
+    }
+
+    setIsReopening(true);
+    setReopenError(null);
+
+    try {
+      const res = await apiClient.reopenTicket(currentTicket.id, reopenReason.trim());
+      if (res.success && res.ticket) {
+        setCurrentTicket(res.ticket);
+        setIsReopenModalOpen(false);
+        setReopenReason('');
+        setReopenSuccess('Ticket reopened and flagged for supervisor review.');
+      } else {
+        setReopenError(res.error || 'Failed to reopen ticket.');
+      }
+    } catch (err: any) {
+      setReopenError(err.message || 'Error communicating with server.');
+    } finally {
+      setIsReopening(false);
+    }
+  };
+
   const getStepIndex = (status: TicketStatus): number => {
     return TICKET_STATUSES.indexOf(status);
   };
@@ -103,7 +134,7 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
             Track Maintenance Complaint Progress
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Enter your unique Ticket ID to see real-time triage, technician assignment, and resolution milestones.
+            Enter your unique Ticket ID to see real-time triage, technician assignment, blockers, and verified proof of fix.
           </p>
         </div>
 
@@ -116,7 +147,7 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
                 value={ticketIdInput}
                 onChange={(e) => setTicketIdInput(e.target.value)}
                 placeholder="Enter Ticket ID (e.g. CC-1001, CC-1002)"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase font-mono text-slate-800"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 uppercase font-mono text-slate-800"
               />
             </div>
             <button
@@ -137,105 +168,85 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
               )}
             </button>
           </div>
-
-          {/* Quick Demo Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs">
-            <span className="text-slate-400 font-medium">Quick examples:</span>
-            {recentLookups.map((id) => (
-              <button
-                type="button"
-                key={id}
-                onClick={() => {
-                  setTicketIdInput(id);
-                  fetchTicket(id);
-                }}
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono text-xs font-semibold cursor-pointer transition-colors"
-              >
-                {id}
-              </button>
-            ))}
-          </div>
         </form>
 
         {errorMessage && (
-          <div className="max-w-xl mx-auto mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-            <AlertCircle size={16} className="shrink-0 text-rose-600" />
+          <div className="max-w-xl mx-auto mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 font-medium">
+            <AlertCircle size={15} className="text-rose-600 shrink-0" />
             <span>{errorMessage}</span>
+          </div>
+        )}
+
+        {reopenSuccess && (
+          <div className="max-w-xl mx-auto mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 font-medium">
+            <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+            <span>{reopenSuccess}</span>
           </div>
         )}
       </div>
 
-      {/* Ticket Details & Timeline View */}
+      {/* Ticket Details View */}
       {currentTicket && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden space-y-6 p-6 sm:p-8">
-          {/* Header Row */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
             <div>
-              <div className="flex items-center gap-3 mb-1">
-                <span className="font-mono text-2xl font-extrabold text-blue-700">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                   {currentTicket.id}
                 </span>
-                <StatusBadge status={currentTicket.status} size="md" />
-                <CategoryBadge category={currentTicket.category} size="md" />
+                <CategoryBadge category={currentTicket.category} />
+                <StatusBadge status={currentTicket.status} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">
+              <h3 className="text-lg font-bold text-slate-900 leading-snug">
                 {currentTicket.title}
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Submitted on {new Date(currentTicket.createdAt).toLocaleDateString()} at{' '}
-                {new Date(currentTicket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              <p className="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                <span>{currentTicket.building}</span> • <span>{currentTicket.location}</span>
               </p>
             </div>
 
-            <button
-              onClick={() => fetchTicket(currentTicket.id)}
-              disabled={isLoading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium cursor-pointer"
-            >
-              <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
-              <span>Refresh Status</span>
-            </button>
+            {/* Reopen Action for Resolved Tickets */}
+            {currentTicket.status === 'Resolved' && (
+              <button
+                type="button"
+                onClick={() => setIsReopenModalOpen(true)}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <RotateCcw size={14} />
+                <span>Report Unsuccessful Repair / Reopen</span>
+              </button>
+            )}
           </div>
 
-          {/* Interactive Progress Timeline (5 Stages) */}
-          <div className="space-y-4 py-2">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Resolution Progress Milestones
+          {/* Workflow Progress Bar */}
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
+              Resolution Milestones
             </h4>
-
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-              {TICKET_STATUSES.map((statusName, idx) => {
-                const isPassed = idx < currentStepIndex;
-                const isCurrent = idx === currentStepIndex;
-                const isPending = idx > currentStepIndex;
-
-                let cardBg = 'bg-slate-50 border-slate-200 text-slate-400';
-                if (isCurrent) {
-                  cardBg =
-                    statusName === 'Resolved'
-                      ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-500/20 text-emerald-800'
-                      : 'bg-blue-50 border-blue-300 ring-2 ring-blue-500/20 text-blue-800';
-                } else if (isPassed) {
-                  cardBg = 'bg-emerald-50/50 border-emerald-200 text-emerald-700';
-                }
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
+              {['Submitted', 'Under Review', 'Assigned', 'In Progress', 'Resolved'].map((st, idx) => {
+                const isPassed = currentStepIndex >= idx;
+                const isCurrent = currentTicket.status === st;
 
                 return (
                   <div
-                    key={statusName}
-                    className={`p-3 rounded-xl border transition-all text-xs flex flex-col justify-between ${cardBg}`}
+                    key={st}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      isCurrent
+                        ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold'
+                        : isPassed
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                        : 'border-slate-200 bg-slate-50 text-slate-400'
+                    }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-[10px] uppercase font-bold text-slate-400">
-                        Step 0{idx + 1}
-                      </span>
-                      {isPassed && <CheckCircle2 size={14} className="text-emerald-600" />}
-                      {isCurrent && (
-                        <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                    <div className="flex items-center gap-1.5 mb-1">
+                      {isPassed ? (
+                        <CheckCircle2 size={13} className="text-emerald-600 shrink-0" />
+                      ) : (
+                        <Clock size={13} className="text-slate-400 shrink-0" />
                       )}
-                    </div>
-                    <div className="font-bold text-slate-900">{statusName}</div>
-                    <div className="text-[10px] mt-1 text-slate-500">
-                      {isPassed ? 'Completed' : isCurrent ? 'Active Stage' : 'Queued'}
+                      <span className="text-[11px] font-semibold">{st}</span>
                     </div>
                   </div>
                 );
@@ -243,136 +254,137 @@ export const TicketTracker: React.FC<TicketTrackerProps> = ({
             </div>
           </div>
 
-          {/* Detailed Info Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            {/* Location & Details */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
-              <h5 className="font-bold text-slate-700 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <MapPin size={14} className="text-blue-600" />
-                <span>Location &amp; Facility Context</span>
-              </h5>
-              <div className="space-y-1.5">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Building:</span>
-                  <span className="font-semibold text-slate-800">{currentTicket.building}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Exact Area:</span>
-                  <span className="font-semibold text-slate-800">{currentTicket.location}</span>
-                </div>
-                {currentTicket.studentName && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Reported By:</span>
-                    <span className="font-medium text-slate-800">{currentTicket.studentName}</span>
-                  </div>
-                )}
+          {/* Proof of Fix Evidence (If available) */}
+          {currentTicket.proofOfFix && (
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 space-y-3">
+              <div className="flex items-center gap-2">
+                <FileCheck size={18} className="text-emerald-700" />
+                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-950">
+                  Verified Proof of Fix by Campus Staff
+                </h4>
               </div>
 
-              {currentTicket.imageDataUri && (
-                <div className="pt-2 border-t border-slate-200">
-                  <span className="text-slate-500 block mb-1.5 font-medium">Attached Photo:</span>
-                  <img
-                    src={currentTicket.imageDataUri}
-                    alt="Complaint visual"
-                    className="w-full max-h-48 object-cover rounded-lg border border-slate-300"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Department Assignment & Triage */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
-              <h5 className="font-bold text-slate-700 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <HardHat size={14} className="text-amber-600" />
-                <span>Department Assignment &amp; Routing</span>
-              </h5>
-
-              {currentTicket.assignment ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Responsible Dept:</span>
-                    <span className="font-semibold text-slate-800">
-                      {currentTicket.assignment.department}
-                    </span>
-                  </div>
-                  {currentTicket.assignment.assignedTo && (
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Technician:</span>
-                      <span className="font-semibold text-blue-700">
-                        {currentTicket.assignment.assignedTo}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Priority Level:</span>
-                    <span className="font-bold text-slate-800">
-                      {currentTicket.assignment.priority}
-                    </span>
-                  </div>
-                  {currentTicket.assignment.notes && (
-                    <div className="p-2.5 rounded-lg bg-white border border-slate-200 text-slate-700 mt-1">
-                      <span className="font-semibold block text-slate-500 mb-0.5">Technician Remarks:</span>
-                      {currentTicket.assignment.notes}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
-                  <p className="font-semibold">Awaiting Staff Assignment</p>
-                  <p className="text-[11px] mt-0.5">
-                    Target department recommended: {currentTicket.aiAnalysis?.recommendedDepartment || 'Campus Facilities Dispatch'}
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <img
+                  src={currentTicket.proofOfFix.photoDataUri}
+                  alt="Proof of Fix Resolution"
+                  className="w-48 h-36 object-cover rounded-xl border border-emerald-300 shadow-xs"
+                />
+                <div className="text-xs space-y-2 text-emerald-900">
+                  <p className="font-medium bg-white p-3 rounded-xl border border-emerald-200">
+                    <strong className="block text-emerald-950 mb-0.5">Technician Summary:</strong>
+                    {currentTicket.proofOfFix.summary}
+                  </p>
+                  <p className="text-[11px] text-emerald-800">
+                    Verified and closed by <strong>{currentTicket.proofOfFix.uploadedBy}</strong> on{' '}
+                    {new Date(currentTicket.proofOfFix.uploadedAt).toLocaleString()}
                   </p>
                 </div>
-              )}
-
-              {/* AI Triage Snippet */}
-              {currentTicket.aiAnalysis && (
-                <div className="p-2.5 rounded-lg bg-indigo-50 border border-indigo-100 text-[11px] space-y-1">
-                  <div className="flex items-center gap-1 text-indigo-900 font-bold">
-                    <Sparkles size={12} className="text-indigo-600" />
-                    <span>Gemini AI Triage Assessment</span>
-                  </div>
-                  <p className="text-indigo-950">
-                    "{currentTicket.aiAnalysis.conciseSummary}"
-                  </p>
-                </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Full Chronological Status Audit Log */}
-          <div className="space-y-3 pt-3 border-t border-slate-200">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Clock size={14} className="text-slate-500" />
-              <span>Full Status Audit Trail &amp; Activity Log</span>
-            </h4>
-
-            <div className="space-y-2">
-              {currentTicket.statusHistory.map((entry, idx) => (
-                <div
-                  key={entry.id || idx}
-                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-800">
-                      {entry.fromStatus ? `${entry.fromStatus} → ` : ''}
-                      <span className="text-blue-700 font-bold">{entry.toStatus}</span>
-                    </span>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-slate-600 font-medium">{entry.changedBy}</span>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-slate-500 text-[11px]">
-                    {entry.notes && (
-                      <span className="italic text-slate-600">"{entry.notes}"</span>
-                    )}
-                    <span className="font-mono text-slate-400 shrink-0">
-                      {new Date(entry.changedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
+          {/* Active Blockers Tracker (If any reported) */}
+          {currentTicket.blockers && currentTicket.blockers.length > 0 && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                <AlertTriangle size={15} className="text-amber-600" />
+                <span>Active Operational Blocker Reported</span>
+              </div>
+              {currentTicket.blockers.map((blk) => (
+                <div key={blk.id} className="text-xs text-amber-800 bg-white p-2.5 rounded-lg border border-amber-200">
+                  <span className="font-semibold">{blk.description}</span>
+                  <p className="text-[10px] text-slate-500 mt-0.5">
+                    Logged by {blk.reportedBy} on {new Date(blk.reportedAt).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Issue Description & History */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 block font-semibold">Original Complaint Description</span>
+              <p className="text-slate-800 font-medium leading-relaxed">{currentTicket.description}</p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 block font-semibold">Responsible Department Assignment</span>
+              <p className="text-slate-800 font-medium">
+                {currentTicket.assignment?.department || 'Awaiting supervisor triage'}
+              </p>
+              {currentTicket.assignment?.assignedTo && (
+                <p className="text-slate-600 text-[11px]">
+                  Technician: <strong>{currentTicket.assignment.assignedTo}</strong>
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reopen Ticket Modal */}
+      {isReopenModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl border border-slate-200 animate-in fade-in">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                <RotateCcw size={16} className="text-amber-600" />
+                <span>Report Failed Repair &amp; Reopen</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsReopenModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {reopenError && (
+              <p className="text-xs text-rose-600 font-medium bg-rose-50 p-2.5 rounded-lg border border-rose-200">
+                {reopenError}
+              </p>
+            )}
+
+            <form onSubmit={handleReopenSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Why is the repair incomplete or recurring? <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  value={reopenReason}
+                  onChange={(e) => setReopenReason(e.target.value)}
+                  placeholder="e.g. Pipe is still dripping water when faucet is turned on..."
+                  rows={3}
+                  required
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsReopenModalOpen(false)}
+                  disabled={isReopening}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isReopening}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  {isReopening ? 'Submitting...' : 'Confirm Reopening'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

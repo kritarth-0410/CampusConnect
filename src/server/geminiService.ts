@@ -2,6 +2,11 @@
  * CampusConnect - Gemini AI Maintenance Intelligence Service
  * Server-side complaint triage, classification, concise summarization,
  * follow-up inquiry generation, multimodal image inspection, and duplicate detection.
+ *
+ * SCOPE RESTRICTION:
+ * Per system architecture requirements, Gemini is used EXCLUSIVELY in the
+ * student complaint-intake workflow. Emergency alerts, priority calculations,
+ * SLA escalation, clustering, and staff actions use deterministic backend logic.
  */
 
 import { GoogleGenAI, Type } from '@google/genai';
@@ -43,12 +48,13 @@ export interface AnalyzeInput {
   mimeType?: string;
 }
 
-// Canonical campus category list
+// Canonical campus category list (Includes 'Other' per specification)
 export const ALLOWED_CATEGORIES: readonly TicketCategory[] = [
   'Plumbing',
   'Electricity',
   'Cleanliness',
-  'Internet Connectivity'
+  'Internet Connectivity',
+  'Other'
 ] as const;
 
 // Supported image MIME types for multimodal inspection
@@ -62,31 +68,58 @@ const SUPPORTED_IMAGE_MIME_TYPES = new Set([
 ]);
 
 /**
+ * Detect Language (English, Hindi, or Hinglish)
+ */
+function detectInputLanguage(text: string): 'English' | 'Hindi' | 'Hinglish' {
+  // Check Devanagari script range
+  const hasDevanagari = /[\u0900-\u097F]/.test(text);
+  if (hasDevanagari) return 'Hindi';
+
+  // Common Romanized Hindi / Hinglish tokens
+  const hinglishTokens = [
+    'nahi', 'chal', 'raha', 'rahi', 'pani', 'paani', 'bijli', 'kachra',
+    'safai', 'pankha', 'chali', 'gayi', 'hai', 'bhi', 'kuch', 'karo',
+    'bah', 'bohot', 'kharab', 'saaf', 'dhuan', 'taar', 'nal', 'nali'
+  ];
+  const words = text.toLowerCase().split(/\s+/);
+  const matchCount = words.filter(w => hinglishTokens.includes(w)).length;
+  if (matchCount >= 2) return 'Hinglish';
+
+  return 'English';
+}
+
+/**
  * Intelligent Fallback Heuristic when Gemini API key is missing or network fails.
  * Guarantees zero downtime while maintaining 100% compliance with requirements.
+ * Understands English, Hindi (Devanagari), and Hinglish (Romanized Hindi).
  */
 export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: string): AIAnalysis {
   const desc = (input.description || '').trim();
   const loc = (input.location || '').trim();
   const bldg = (input.building || '').trim();
   const text = `${desc} ${loc} ${bldg}`.toLowerCase();
+  const detectedLanguage = detectInputLanguage(`${desc} ${loc}`);
 
-  // Keyword scoring for the 4 categories
+  // Multilingual keyword scoring (English + Hindi + Hinglish)
   const plumbingKeywords = [
     'leak', 'water', 'pipe', 'drain', 'toilet', 'faucet', 'sink', 'tap', 'flush',
-    'flood', 'sewage', 'clog', 'clogged', 'basin', 'washbasin', 'plumbing', 'drip', 'dripping'
+    'flood', 'sewage', 'clog', 'clogged', 'basin', 'washbasin', 'plumbing', 'drip', 'dripping',
+    'pani', 'paani', 'nal', 'nali', 'bah', 'tapka', 'ganda pani', 'flush nahi', 'pani tapak', 'geyser'
   ];
   const electricKeywords = [
     'light', 'power', 'socket', 'plug', 'switch', 'spark', 'sparking', 'blackout',
-    'breaker', 'wire', 'wiring', 'fan', 'ac', 'air conditioner', 'electric', 'voltage', 'outlet', 'tripped'
+    'breaker', 'wire', 'wiring', 'fan', 'ac', 'air conditioner', 'electric', 'voltage', 'outlet', 'tripped',
+    'bijli', 'pankha', 'taar', 'dhuan', 'current', 'chamak', 'andhera', 'fuse', 'switch kharab'
   ];
   const cleanlinessKeywords = [
     'trash', 'garbage', 'dirty', 'stain', 'dust', 'spill', 'smell', 'odor',
-    'restroom', 'litter', 'pest', 'cockroach', 'roach', 'bin', 'overflow', 'sticky', 'clean'
+    'restroom', 'litter', 'pest', 'cockroach', 'roach', 'bin', 'overflow', 'sticky', 'clean',
+    'kachra', 'safai', 'saaf', 'gandagi', 'dustbin', 'badboo', 'keede', 'chiti'
   ];
   const internetKeywords = [
     'wifi', 'wi-fi', 'internet', 'network', 'router', 'ethernet', 'connection',
-    'slow', 'disconnect', 'eduroam', 'signal', 'access point', 'ap', 'ssid', 'dhcp', 'offline'
+    'slow', 'disconnect', 'eduroam', 'signal', 'access point', 'ap', 'ssid', 'dhcp', 'offline',
+    'net nahi', 'net slow', 'disconnect ho', 'chalta nahi', 'range nahi'
   ];
 
   const pScore = plumbingKeywords.filter(k => text.includes(k)).length;
@@ -109,16 +142,23 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
     category = 'Internet Connectivity';
     maxScore = iScore;
   }
+  // If no recognized facility keywords match, classify as 'Other'
+  if (maxScore === 0) {
+    category = 'Other';
+  }
 
   let confidence: 'High' | 'Medium' | 'Low' = 'Low';
   let confidenceScore = 0.5;
 
   if (maxScore >= 3) {
     confidence = 'High';
-    confidenceScore = 0.9;
+    confidenceScore = 0.92;
   } else if (maxScore >= 1) {
     confidence = 'Medium';
-    confidenceScore = 0.72;
+    confidenceScore = 0.75;
+  } else {
+    confidence = 'Low';
+    confidenceScore = 0.45;
   }
 
   // Safety Hazard Detection
@@ -128,6 +168,8 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
     text.includes('fire') ||
     text.includes('shock') ||
     text.includes('burning') ||
+    text.includes('dhuan') ||
+    text.includes('current') ||
     (text.includes('water') && (text.includes('outlet') || text.includes('plug') || text.includes('socket'))) ||
     text.includes('flood') ||
     text.includes('gas');
@@ -151,7 +193,7 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
   }
 
   if (category === 'Plumbing') {
-    if (!text.includes('active') && !text.includes('stop') && !text.includes('shut')) {
+    if (!text.includes('active') && !text.includes('stop') && !text.includes('shut') && !text.includes('gush')) {
       missingDetails.push('Leak severity (active flow vs intermittent drip)');
       followUpQuestions.push('Is the water actively gushing or dripping steadily? Can the shutoff valve be safely reached?');
     }
@@ -170,6 +212,9 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
       missingDetails.push('Type of sanitation cleanup required');
       followUpQuestions.push('Does the area require wet mopping for liquids, trash removal, or disinfection?');
     }
+  } else if (category === 'Other') {
+    missingDetails.push('Specific problem classification');
+    followUpQuestions.push('Please specify a custom problem title describing the equipment or fixture requiring attention.');
   }
 
   const department: Department = CATEGORY_DEPARTMENT_ROUTING[category];
@@ -178,7 +223,8 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
     'Plumbing': 'Routed to Plumbing Maintenance for fixture inspection, valve repair, and leak containment.',
     'Electricity': 'Routed to Electrical Systems & Safety Division for wiring inspection, outlet replacement, and circuit safety.',
     'Cleanliness': 'Routed to Campus Custodial & Sanitation Services for immediate trash clearing and floor sanitation.',
-    'Internet Connectivity': 'Routed to IT & Network Infrastructure Team for AP diagnostic telemetry and network switch troubleshooting.'
+    'Internet Connectivity': 'Routed to IT & Network Infrastructure Team for AP diagnostic telemetry and network switch troubleshooting.',
+    'Other': 'Routed to Campus Operations & General Maintenance for general facilities evaluation.'
   };
 
   // Concise Summary Synthesis
@@ -187,6 +233,7 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
   else if (category === 'Electricity') summaryPrefix = 'Electrical fixture defect or power issue';
   else if (category === 'Cleanliness') summaryPrefix = 'Sanitation or waste overflow issue';
   else if (category === 'Internet Connectivity') summaryPrefix = 'Network connectivity degradation';
+  else if (category === 'Other') summaryPrefix = 'General maintenance or fixture request';
 
   const conciseSummary = `${summaryPrefix} at ${bldg || 'Campus Facility'} ${loc ? `(${loc})` : ''}: ${desc.slice(0, 90).replace(/\s+/g, ' ')}${desc.length > 90 ? '...' : ''}`;
 
@@ -207,32 +254,35 @@ export function heuristicFallbackAnalysis(input: AnalyzeInput, fallbackReason?: 
     imageObservations,
     urgencyAssessment,
     analyzedAt: new Date().toISOString(),
-    isAiFallback: true
+    isAiFallback: true,
+    detectedLanguage
   };
 }
 
 /**
  * Normalizes and validates Gemini output to ensure strict compliance
- * with the 4 allowed categories, department routing, and schema.
+ * with the 5 allowed categories, department routing, and schema.
  */
 function sanitizeAiAnalysis(parsed: any, input: AnalyzeInput): AIAnalysis {
-  // 1. Strict Category Validation (Exactly 4 allowed categories)
-  let validCategory: TicketCategory = 'Plumbing';
+  // 1. Strict Category Validation (Must be one of the 5 allowed categories)
+  let validCategory: TicketCategory = 'Other';
   const cleanCat = String(parsed.suggestedCategory || '').trim();
 
   if (ALLOWED_CATEGORIES.includes(cleanCat as TicketCategory)) {
     validCategory = cleanCat as TicketCategory;
   } else {
-    // Robust semantic mapping to exactly one of the 4 allowed categories
+    // Semantic mapping to one of the 5 allowed categories
     const catLower = cleanCat.toLowerCase();
-    if (/electric|power|light|socket|plug|wire|outlet|volt/i.test(catLower)) {
+    if (/electric|power|light|socket|plug|wire|outlet|volt|pankha|bijli/i.test(catLower)) {
       validCategory = 'Electricity';
-    } else if (/clean|trash|dirty|washroom|restroom|garbage|spill|sanitat/i.test(catLower)) {
+    } else if (/clean|trash|dirty|washroom|restroom|garbage|spill|sanitat|kachra|safai/i.test(catLower)) {
       validCategory = 'Cleanliness';
     } else if (/net|wifi|wi-fi|connect|internet|ethernet|eduroam|signal/i.test(catLower)) {
       validCategory = 'Internet Connectivity';
-    } else {
+    } else if (/leak|water|pipe|drain|faucet|sink|toilet|plumb|pani|nal/i.test(catLower)) {
       validCategory = 'Plumbing';
+    } else {
+      validCategory = 'Other';
     }
   }
 
@@ -272,9 +322,12 @@ function sanitizeAiAnalysis(parsed: any, input: AnalyzeInput): AIAnalysis {
     : [];
 
   // 7. Image Observations
-  const imageObservations = parsed.imageObservations && typeof parsed.imageObservations === 'string' && parsed.imageObservations.trim() !== 'null'
-    ? parsed.imageObservations.trim()
-    : undefined;
+  const imageObservations =
+    parsed.imageObservations && typeof parsed.imageObservations === 'string' && parsed.imageObservations.trim() !== 'null'
+      ? parsed.imageObservations.trim()
+      : undefined;
+
+  const detectedLanguage = detectInputLanguage(`${input.description} ${input.location || ''}`);
 
   return {
     suggestedCategory: validCategory,
@@ -282,25 +335,28 @@ function sanitizeAiAnalysis(parsed: any, input: AnalyzeInput): AIAnalysis {
     confidenceScore: Number(confidenceScore.toFixed(2)),
     conciseSummary,
     recommendedDepartment: department,
-    departmentRoutingReason: parsed.departmentRoutingReason || `Assigned to ${department} based on ${validCategory} classification.`,
+    departmentRoutingReason:
+      parsed.departmentRoutingReason || `Assigned to ${department} based on ${validCategory} classification.`,
     missingDetailsIdentified: missingDetails,
     followUpQuestions,
     imageObservations,
     urgencyAssessment: urgency,
     analyzedAt: new Date().toISOString(),
-    isAiFallback: false
+    isAiFallback: false,
+    detectedLanguage
   };
 }
 
 /**
  * Analyzes an informal complaint using Gemini 3.8 Flash (Multimodal).
  * Implements:
- * 1. AI-generated concise summaries
- * 2. Suggest exactly one of 4 categories: Plumbing, Electricity, Cleanliness, Internet Connectivity
- * 3. Suggest responsible maintenance department
- * 4. Identify missing info and generate relevant follow-up questions
- * 5. Multimodal photo inspection for visible defects when photo is provided
- * 6. Graceful error handling and fallback when API key is missing or invalid
+ * 1. Multilingual understanding (English, Hindi, Hinglish)
+ * 2. AI-generated concise summaries
+ * 3. Suggest one of 5 categories: Plumbing, Electricity, Cleanliness, Internet Connectivity, Other
+ * 4. Suggest responsible maintenance department
+ * 5. Identify missing info and generate relevant follow-up questions
+ * 6. Multimodal photo inspection for visible defects when photo is provided
+ * 7. Graceful error handling and 10s timeout protection with deterministic fallback
  */
 export async function analyzeComplaintWithGemini(input: AnalyzeInput): Promise<AIAnalysis> {
   const client = getAiClient();
@@ -311,7 +367,7 @@ export async function analyzeComplaintWithGemini(input: AnalyzeInput): Promise<A
 
   try {
     const systemPrompt = `You are CampusConnect AI, an expert campus facilities triage engineer.
-Your responsibility is to analyze informal student maintenance complaints and produce structured, actionable triage intelligence for facilities staff.
+Your responsibility is to analyze informal student maintenance complaints (submitted in English, Hindi, or Hinglish) and produce structured, actionable triage intelligence for facilities staff.
 
 CAMPUS CONSTRAINTS & BUSINESS RULES:
 1. Category MUST BE EXACTLY ONE OF:
@@ -319,21 +375,25 @@ CAMPUS CONSTRAINTS & BUSINESS RULES:
    - "Electricity"
    - "Cleanliness"
    - "Internet Connectivity"
-   Never output any other category.
+   - "Other"
+   If the issue does not fit the primary four, classify as "Other".
 
 2. Responsible Department Routing:
    - "Plumbing" -> "Plumbing Maintenance Department"
    - "Electricity" -> "Electrical Systems & Safety Division"
    - "Cleanliness" -> "Campus Custodial & Sanitation Services"
    - "Internet Connectivity" -> "IT & Network Infrastructure Team"
+   - "Other" -> "Campus Operations & General Maintenance"
    Provide a brief "departmentRoutingReason" explaining why this team is required and what technical tools/skills are needed.
 
 3. AI Problem Summary:
-   - Generate a single, crisp, objective technical sentence ("conciseSummary") stating the problem, its specific location, and operational/safety impact.
+   - Generate a single, crisp, objective technical sentence in English ("conciseSummary") stating the problem, its specific location, and operational/safety impact.
+   - If complaint was in Hindi or Hinglish, translate and summarize objectively into English for dispatch personnel.
    - Remove emotional complaining, conversational filler, and personal anecdotes.
 
 4. Missing Information & Follow-up Questions:
    - Determine if essential information for dispatch is missing (e.g. room/desk number, floor/wing, active water flow vs leak, sparking/smoke, Wi-Fi SSID and device type).
+   - If category is "Other", ask for a specific custom Problem Title.
    - Formulate 1 to 3 friendly, polite, brief follow-up questions for the student.
    - If the student complaint already provides complete and actionable information, return empty arrays for missingDetailsIdentified and followUpQuestions.
 
@@ -373,66 +433,74 @@ Analyze this maintenance report and provide the structured triage JSON.`;
 
     parts.push({ text: textPayload });
 
-    const response = await client.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: { parts },
-      config: {
-        systemInstruction: systemPrompt,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            suggestedCategory: {
-              type: Type.STRING,
-              description: 'Must be strictly one of: Plumbing, Electricity, Cleanliness, Internet Connectivity'
-            },
-            confidence: {
-              type: Type.STRING,
-              description: 'High, Medium, or Low'
-            },
-            confidenceScore: {
-              type: Type.NUMBER,
-              description: 'Confidence between 0.1 and 1.0'
-            },
-            conciseSummary: {
-              type: Type.STRING,
-              description: 'Crisp single-sentence technical problem statement'
-            },
-            departmentRoutingReason: {
-              type: Type.STRING,
-              description: 'Why this specific department is dispatched and required tools'
-            },
-            missingDetailsIdentified: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: 'Specific missing information necessary for dispatch'
-            },
-            followUpQuestions: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: '1 to 3 direct questions to clarify missing details with the student'
-            },
-            imageObservations: {
-              type: Type.STRING,
-              description: 'Visible physical defects from attached image, or null if no image'
-            },
-            urgencyAssessment: {
-              type: Type.STRING,
-              description: 'Routine, Moderate, Urgent, or Safety Hazard'
-            }
-          },
-          required: [
-            'suggestedCategory',
-            'confidence',
-            'confidenceScore',
-            'conciseSummary',
-            'missingDetailsIdentified',
-            'followUpQuestions',
-            'urgencyAssessment'
-          ]
-        }
-      }
+    // Enforce 10-second timeout guard to prevent server hanging
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Gemini API call timed out after 10000ms')), 10000);
     });
+
+    const response = await Promise.race([
+      client.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: { parts },
+        config: {
+          systemInstruction: systemPrompt,
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              suggestedCategory: {
+                type: Type.STRING,
+                description: 'Must be strictly one of: Plumbing, Electricity, Cleanliness, Internet Connectivity, Other'
+              },
+              confidence: {
+                type: Type.STRING,
+                description: 'High, Medium, or Low'
+              },
+              confidenceScore: {
+                type: Type.NUMBER,
+                description: 'Confidence between 0.1 and 1.0'
+              },
+              conciseSummary: {
+                type: Type.STRING,
+                description: 'Crisp single-sentence technical problem statement'
+              },
+              departmentRoutingReason: {
+                type: Type.STRING,
+                description: 'Why this specific department is dispatched and required tools'
+              },
+              missingDetailsIdentified: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: 'Specific missing information necessary for dispatch'
+              },
+              followUpQuestions: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: '1 to 3 direct questions to clarify missing details with the student'
+              },
+              imageObservations: {
+                type: Type.STRING,
+                description: 'Visible physical defects from attached image, or null if no image'
+              },
+              urgencyAssessment: {
+                type: Type.STRING,
+                description: 'Routine, Moderate, Urgent, or Safety Hazard'
+              }
+            },
+            required: [
+              'suggestedCategory',
+              'confidence',
+              'confidenceScore',
+              'conciseSummary',
+              'missingDetailsIdentified',
+              'followUpQuestions',
+              'urgencyAssessment'
+            ]
+          }
+        }
+      }),
+      timeoutPromise
+    ]);
 
     const rawText = response.text?.trim() || '';
     if (!rawText) {
@@ -451,14 +519,14 @@ Analyze this maintenance report and provide the structured triage JSON.`;
  * Domain Synonyms Map for Enhanced Maintenance Similarity Detection
  */
 const DOMAIN_SYNONYMS: Record<string, string[]> = {
-  leak: ['leak', 'leaking', 'drip', 'dripping', 'flood', 'flooding', 'wet', 'water', 'spill', 'pipe', 'puddle'],
+  leak: ['leak', 'leaking', 'drip', 'dripping', 'flood', 'flooding', 'wet', 'water', 'spill', 'pipe', 'puddle', 'pani', 'paani', 'nal'],
   faucet: ['faucet', 'tap', 'sink', 'washbasin', 'basin', 'valve'],
-  drain: ['drain', 'clog', 'clogged', 'blocked', 'overflow', 'sewage', 'toilet'],
-  spark: ['spark', 'sparking', 'smoke', 'burnt', 'burning', 'ozone', 'pop', 'popping', 'shock'],
+  drain: ['drain', 'clog', 'clogged', 'blocked', 'overflow', 'sewage', 'toilet', 'nali'],
+  spark: ['spark', 'sparking', 'smoke', 'burnt', 'burning', 'ozone', 'pop', 'popping', 'shock', 'dhuan', 'current', 'chamak'],
   outlet: ['outlet', 'socket', 'plug', 'strip', 'receptacle', 'power'],
   breaker: ['breaker', 'trip', 'tripped', 'fuse', 'blackout', 'powerout'],
-  wifi: ['wifi', 'wi-fi', 'internet', 'network', 'eduroam', 'signal', 'disconnect', 'offline', 'drops', 'slow'],
-  trash: ['trash', 'garbage', 'bin', 'litter', 'waste', 'can', 'overflow', 'overflowing'],
+  wifi: ['wifi', 'wi-fi', 'internet', 'network', 'eduroam', 'signal', 'disconnect', 'offline', 'drops', 'slow', 'net'],
+  trash: ['trash', 'garbage', 'bin', 'litter', 'waste', 'can', 'overflow', 'overflowing', 'kachra', 'gandagi'],
   restroom: ['restroom', 'washroom', 'bathroom', 'toilet', 'lavatory', 'wc']
 };
 
@@ -487,7 +555,6 @@ function extractCanonicalTokens(str: string): Set<string> {
 
 /**
  * Extract room or specific area numbers from location text
- * e.g., "Room 204", "Hall 101", "Desks 301-325", "3F"
  */
 function extractRoomNumbers(str: string): string[] {
   const matches = str.match(/\b\d{2,4}[a-z]?\b/gi) || [];
@@ -497,7 +564,7 @@ function extractRoomNumbers(str: string): string[] {
 /**
  * Normalize building names for reliable matching across abbreviations
  */
-function normalizeBuildingName(bldg?: string): string {
+export function normalizeBuildingName(bldg?: string): string {
   if (!bldg) return '';
   const b = bldg.toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
   if (b.includes('science') || b.includes('engineering') || b.includes('sec')) return 'science & engineering complex';
@@ -511,13 +578,13 @@ function normalizeBuildingName(bldg?: string): string {
 
 /**
  * Duplicate Complaint Detection
- * Flags possible duplicate complaints for human staff review.
+ * Flags possible duplicate complaints for human staff review using actual existing records.
  * Multi-factor similarity analysis based on:
  * - Campus building match / alias resolution
  * - Specific room / floor / area number extraction
  * - Maintenance category match
  * - Text token & domain synonym overlap
- * 
+ *
  * DESIGN PRINCIPLE:
  * Duplicate matches are provided as advisory warnings for staff evaluation.
  * Complaints are NEVER automatically rejected or merged by the AI.
@@ -536,7 +603,6 @@ export function detectDuplicateCandidates(
   }
 
   const duplicates: DuplicateCandidate[] = [];
-  const newText = (newComplaint.description || '').toLowerCase();
   const newLoc = (newComplaint.location || '').toLowerCase();
   const newBldgRaw = newComplaint.building || '';
   const newBldgNorm = normalizeBuildingName(newBldgRaw);
@@ -551,7 +617,6 @@ export function detectDuplicateCandidates(
       continue;
     }
 
-    const tText = `${ticket.title} ${ticket.description}`.toLowerCase();
     const tLoc = (ticket.location || '').toLowerCase();
     const tBldgNorm = normalizeBuildingName(ticket.building);
     const tTokens = extractCanonicalTokens(`${ticket.title} ${ticket.description} ${ticket.location}`);

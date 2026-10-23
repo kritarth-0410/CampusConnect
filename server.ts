@@ -1,12 +1,19 @@
 /**
  * CampusConnect - Production Full-Stack Server
  * Features:
- * - Real role-based authentication (Student, Staff, Admin)
+ * - Real role-based authentication (Student, Staff, Admin, Responder)
+ * - Persistent Student Profile Setup with server-side ownership validation
+ * - Emergency Reporting (Strictly Two Primary Steps) with responder dispatch & acknowledgement
  * - Server-side authorization on every protected route (no client-side bypass)
  * - Insecure Direct Object Reference (IDOR) prevention
  * - Internal staff notes separation (stripped from student API responses)
- * - Validated workflow state transitions
- * - Server-side Gemini 3.8 Flash AI integration
+ * - Validated workflow state transitions with mandatory Proof of Fix on resolve
+ * - Reopen ticket mechanism for reporting students
+ * - Impact-Based Priority Engine (Non-AI)
+ * - Recurring-Issue Clustering (10 in rolling 2 hours)
+ * - Repeat-Offender Asset Detector & Classroom Readiness scoring
+ * - Verified Instant Workarounds, Campus Waste Detector & Campus X-Ray Hotspots
+ * - Server-side Gemini 3.8 Flash AI integration (EXCLUSIVELY for complaint intake)
  * - Host: 0.0.0.0, Port: 3000
  */
 
@@ -36,7 +43,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const isProduction = process.env.NODE_ENV === 'production';
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const PORT = 3000;
 
 // Extend Express Request to carry authenticated user
 declare global {
@@ -50,7 +57,7 @@ declare global {
 async function createServer() {
   const app = express();
 
-  // Middleware for JSON bodies (supports up to 5MB for base64 photo attachments)
+  // Middleware for JSON bodies (supports up to 6MB for base64 photo attachments)
   app.use(express.json({ limit: '6mb' }));
   app.use(express.urlencoded({ extended: true, limit: '6mb' }));
 
@@ -103,6 +110,20 @@ async function createServer() {
     next();
   };
 
+  // Guard: Requires emergency responder, staff, or admin role
+  const requireResponderOrStaff = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+    if (req.user.role !== 'responder' && req.user.role !== 'staff' && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden: Requires designated campus responder or staff privileges.'
+      });
+    }
+    next();
+  };
+
   // Guard: Requires admin role
   const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
@@ -121,7 +142,7 @@ async function createServer() {
   // AUTHENTICATION ROUTES
   // --------------------------------------------------------------------------
 
-  // Sign In (Students, Staff, Admin)
+  // Sign In (Students, Staff, Admin, Responders)
   app.post('/api/auth/login', (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
@@ -191,6 +212,134 @@ async function createServer() {
   });
 
   // --------------------------------------------------------------------------
+  // STUDENT PROFILE SETUP & PERSISTENCE (Server-Enforced Ownership)
+  // --------------------------------------------------------------------------
+
+  // Get current student's saved profile
+  app.get('/api/profile', requireAuth, (req: Request, res: Response) => {
+    if (req.user!.role !== 'student') {
+      return res.status(400).json({ success: false, error: 'Profile setup is dedicated to student accounts' });
+    }
+
+    const profile = userStore.getStudentProfile(req.user!.id);
+    return res.json({
+      success: true,
+      profile
+    });
+  });
+
+  // Save/Update student profile (Validated & Persisted)
+  app.put('/api/profile', requireAuth, (req: Request, res: Response) => {
+    if (req.user!.role !== 'student') {
+      return res.status(400).json({ success: false, error: 'Only students can update a student profile' });
+    }
+
+    const result = userStore.updateStudentProfile(req.user!.id, req.body);
+    if (!result.success) {
+      return res.status(400).json({ success: false, error: result.error });
+    }
+
+    return res.json({
+      success: true,
+      profile: result.profile,
+      message: 'Student profile saved and verified successfully'
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // EMERGENCY INCIDENT REPORTING (Strictly Two Primary Steps)
+  // --------------------------------------------------------------------------
+
+  // Step 2: Confirm Emergency Alert (Uses reporting student's own saved profile)
+  app.post('/api/emergency/submit', requireAuth, (req: Request, res: Response) => {
+    try {
+      const { emergencyType, building, floor, room, gps, notes } = req.body;
+
+      const validTypes = ['medical', 'security', 'general'];
+      const type = validTypes.includes(emergencyType) ? emergencyType : 'general';
+
+      const result = ticketRepository.createEmergencyIncident({
+        studentUser: req.user!,
+        emergencyType: type,
+        building,
+        floor,
+        room,
+        gps,
+        notes
+      });
+
+      return res.status(201).json({
+        success: true,
+        incident: result.incident,
+        isDuplicateSuppressed: result.isDuplicateSuppressed || false,
+        message: result.isDuplicateSuppressed
+          ? 'Emergency alert is already active; notifications currently en route.'
+          : 'Emergency incident created; responders and dispatch notified.'
+      });
+    } catch (err: any) {
+      console.error('[API /api/emergency/submit Error]', err);
+      return res.status(500).json({ success: false, error: err.message || 'Failed to submit emergency alert' });
+    }
+  });
+
+  // List Emergency Incidents (Role scoped: Student sees own; Responders/Staff/Admin see all)
+  app.get('/api/emergency/incidents', requireAuth, (req: Request, res: Response) => {
+    const incidents = ticketRepository.getEmergencyIncidentsForUser(req.user!);
+    return res.json({
+      success: true,
+      incidents,
+      total: incidents.length
+    });
+  });
+
+  // Get Emergency Incident by ID
+  app.get('/api/emergency/incidents/:id', requireAuth, (req: Request, res: Response) => {
+    const incident = ticketRepository.getEmergencyIncidentById(req.params.id, req.user!);
+    if (!incident) {
+      return res.status(404).json({ success: false, error: 'Emergency incident not found or access denied.' });
+    }
+    return res.json({
+      success: true,
+      incident
+    });
+  });
+
+  // Acknowledge Emergency (Responders, Staff, Admin)
+  app.post('/api/emergency/incidents/:id/acknowledge', requireResponderOrStaff, (req: Request, res: Response) => {
+    const { notes } = req.body;
+    const result = ticketRepository.acknowledgeEmergency(req.params.id, req.user!, notes);
+    if (!result.success) {
+      return res.status(400).json({ success: false, error: result.error });
+    }
+    return res.json({
+      success: true,
+      incident: result.incident,
+      message: 'Emergency incident acknowledged. Responder marked active.'
+    });
+  });
+
+  // Update Emergency Status (Responders, Staff, Admin)
+  app.post('/api/emergency/incidents/:id/status', requireResponderOrStaff, (req: Request, res: Response) => {
+    const { status, notes } = req.body;
+    if (!['Responding', 'Escalated', 'Resolved'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Status must be "Responding", "Escalated", or "Resolved"'
+      });
+    }
+
+    const result = ticketRepository.updateEmergencyStatus(req.params.id, status, req.user!, notes);
+    if (!result.success) {
+      return res.status(400).json({ success: false, error: result.error });
+    }
+    return res.json({
+      success: true,
+      incident: result.incident,
+      message: `Emergency status updated to ${status}`
+    });
+  });
+
+  // --------------------------------------------------------------------------
   // HEALTH & DIAGNOSTICS ROUTES
   // --------------------------------------------------------------------------
 
@@ -212,7 +361,7 @@ async function createServer() {
   });
 
   // --------------------------------------------------------------------------
-  // AI COMPLAINT TRIAGE ROUTES
+  // AI COMPLAINT TRIAGE ROUTES (STRICT COMPLAINT-INTAKE WORKFLOW ONLY)
   // --------------------------------------------------------------------------
 
   app.post('/api/complaints/analyze', async (req: Request, res: Response) => {
@@ -236,7 +385,7 @@ async function createServer() {
         }
       }
 
-      // Run server-side Gemini AI analysis
+      // Run server-side Gemini AI analysis (or deterministic fallback)
       const analysis = await analyzeComplaintWithGemini({
         description: description.trim(),
         location: location ? String(location).trim() : undefined,
@@ -292,6 +441,7 @@ async function createServer() {
         building,
         roomOrArea,
         category,
+        customProblemTitle,
         categorySource,
         imageBase64,
         mimeType,
@@ -311,12 +461,22 @@ async function createServer() {
         return res.status(400).json({ success: false, error: 'Specific location or room is required' });
       }
 
-      // Strict validation of the 4 allowed categories
+      // Validation of the 5 allowed categories
       if (!TICKET_CATEGORIES.includes(category as TicketCategory)) {
         return res.status(400).json({
           success: false,
           error: `Invalid category: "${category}". Must be one of: ${TICKET_CATEGORIES.join(', ')}`
         });
+      }
+
+      // If Category is 'Other', a custom Problem Title is MANDATORY
+      if (category === 'Other') {
+        if (!customProblemTitle || !customProblemTitle.trim()) {
+          return res.status(400).json({
+            success: false,
+            error: 'When category is "Other", a custom Problem Title is required.'
+          });
+        }
       }
 
       // Image validation
@@ -349,6 +509,7 @@ async function createServer() {
         building: building.trim(),
         roomOrArea: roomOrArea ? roomOrArea.trim() : undefined,
         category,
+        customProblemTitle: customProblemTitle ? customProblemTitle.trim() : undefined,
         categorySource: categorySource || 'student',
         studentUser: req.user!,
         imageBase64,
@@ -408,7 +569,7 @@ async function createServer() {
 
     const ticket = ticketRepository.getByIdForUser(cleanId, req.user!);
     if (!ticket) {
-      // Check if ticket exists but user is not allowed (IDOR check)
+      // IDOR check
       const rawExists = ticketRepository.getRawById(cleanId);
       if (rawExists && req.user!.role === 'student' && rawExists.studentId !== req.user!.id) {
         return res.status(403).json({
@@ -464,7 +625,24 @@ async function createServer() {
     });
   });
 
-  // Update Status (Staff / Admin only with state machine validation)
+  // Submit Proof of Fix (Staff / Admin only)
+  app.post('/api/tickets/:id/proof-of-fix', requireStaff, (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { photoDataUri, summary } = req.body;
+
+    const result = ticketRepository.submitProofOfFix(id, photoDataUri, summary, req.user!);
+    if (!result.success) {
+      return res.status(400).json({ success: false, error: result.error });
+    }
+
+    return res.json({
+      success: true,
+      ticket: result.ticket,
+      message: 'Proof of Fix verified and recorded.'
+    });
+  });
+
+  // Update Status (Staff / Admin only with state machine validation & mandatory Proof of Fix)
   app.post('/api/tickets/:id/status', requireStaff, (req: Request, res: Response) => {
     const { id } = req.params;
     const { status, notes } = req.body;
@@ -491,6 +669,68 @@ async function createServer() {
       success: true,
       ticket: result.ticket,
       message: `Status updated to ${status}`
+    });
+  });
+
+  // Student Reopen Ticket (Ownership verified)
+  app.post('/api/tickets/:id/reopen', requireAuth, (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const result = ticketRepository.reopenTicket(id, req.user!, reason);
+    if (!result.success) {
+      return res.status(400).json({ success: false, error: result.error });
+    }
+
+    return res.json({
+      success: true,
+      ticket: result.ticket,
+      message: 'Complaint reopened and flagged for staff review.'
+    });
+  });
+
+  // Override Priority (Staff / Admin only with audit log)
+  app.post('/api/tickets/:id/priority-override', requireStaff, (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { priority, reason } = req.body;
+
+    if (!['Low', 'Medium', 'High', 'Emergency'].includes(priority)) {
+      return res.status(400).json({ success: false, error: 'Invalid priority level' });
+    }
+    if (!reason || !reason.trim()) {
+      return res.status(400).json({ success: false, error: 'Staff audit reason is required for priority override' });
+    }
+
+    const updated = ticketRepository.overridePriority(id, priority, reason, req.user!);
+    if (!updated) {
+      return res.status(404).json({ success: false, error: `Ticket ${id} not found` });
+    }
+
+    return res.json({
+      success: true,
+      ticket: updated,
+      message: `Priority overridden to ${priority}`
+    });
+  });
+
+  // Add Blocker to Ticket (Staff / Admin only)
+  app.post('/api/tickets/:id/blockers', requireStaff, (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { description } = req.body;
+
+    if (!description || !description.trim()) {
+      return res.status(400).json({ success: false, error: 'Blocker description is required' });
+    }
+
+    const updated = ticketRepository.addBlocker(id, description, req.user!);
+    if (!updated) {
+      return res.status(404).json({ success: false, error: `Ticket ${id} not found` });
+    }
+
+    return res.json({
+      success: true,
+      ticket: updated,
+      message: 'Blocker recorded on ticket.'
     });
   });
 
@@ -562,16 +802,96 @@ async function createServer() {
   });
 
   // --------------------------------------------------------------------------
+  // ADVANCED CAMPUS INTELLIGENCE & OPERATIONAL ENDPOINTS
+  // --------------------------------------------------------------------------
+
+  // Recurring-Issue Clusters (>= 10 complaints in rolling 2 hours)
+  app.get('/api/clusters', requireStaff, (_req: Request, res: Response) => {
+    const clusters = ticketRepository.getClusters();
+    return res.json({
+      success: true,
+      clusters,
+      total: clusters.length
+    });
+  });
+
+  app.post('/api/clusters/:id/action', requireStaff, (req: Request, res: Response) => {
+    const { action, note, ticketIdToUnlink } = req.body;
+    if (!['dismiss', 'resolve', 'unlink'].includes(action)) {
+      return res.status(400).json({ success: false, error: 'Invalid cluster review action' });
+    }
+
+    const updated = ticketRepository.reviewCluster(
+      req.params.id,
+      action,
+      req.user!,
+      note,
+      ticketIdToUnlink
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, error: 'Cluster not found' });
+    }
+
+    return res.json({ success: true, cluster: updated });
+  });
+
+  // Repeat-Offender Asset Detector
+  app.get('/api/assets/repeat-offenders', requireStaff, (_req: Request, res: Response) => {
+    const repeatOffenders = ticketRepository.getRepeatOffenders();
+    return res.json({
+      success: true,
+      repeatOffenders
+    });
+  });
+
+  // Classroom / Area Readiness Scores
+  app.get('/api/classrooms/readiness', requireAuth, (_req: Request, res: Response) => {
+    const readiness = ticketRepository.getClassroomReadiness();
+    return res.json({
+      success: true,
+      readiness
+    });
+  });
+
+  // Verified Instant Workaround Suggestions
+  app.get('/api/facilities/workarounds', requireAuth, (_req: Request, res: Response) => {
+    const workarounds = ticketRepository.getWorkarounds();
+    return res.json({
+      success: true,
+      workarounds
+    });
+  });
+
+  // Campus Waste Detector Alerts
+  app.get('/api/campus/waste', requireStaff, (_req: Request, res: Response) => {
+    const wasteAlerts = ticketRepository.getWasteAlerts();
+    return res.json({
+      success: true,
+      wasteAlerts
+    });
+  });
+
+  // Campus X-Ray Hotspot Summaries (Privacy-safe aggregate data)
+  app.get('/api/campus/xray', requireAuth, (_req: Request, res: Response) => {
+    const hotspots = ticketRepository.getCampusXRayHotspots();
+    return res.json({
+      success: true,
+      hotspots
+    });
+  });
+
+  // --------------------------------------------------------------------------
   // ADMINISTRATOR ROUTES
   // --------------------------------------------------------------------------
 
-  // List all staff members
+  // List all staff and responder members
   app.get('/api/admin/staff', requireAdmin, (_req: Request, res: Response) => {
     const staff = userStore.getAllStaff();
     return res.json({ success: true, staff });
   });
 
-  // Create new staff account
+  // Create new staff or responder account
   app.post('/api/admin/staff', requireAdmin, (req: Request, res: Response) => {
     try {
       const { name, email, password, department, role } = req.body;
@@ -583,12 +903,14 @@ async function createServer() {
         return res.status(400).json({ success: false, error: 'Invalid department' });
       }
 
+      const assignedRole = role === 'admin' ? 'admin' : role === 'responder' ? 'responder' : 'staff';
+
       const newStaff = userStore.createStaffMember({
         name,
         email,
         password,
         department,
-        role: role === 'admin' ? 'admin' : 'staff'
+        role: assignedRole
       });
 
       return res.status(201).json({ success: true, staff: newStaff });
@@ -597,7 +919,7 @@ async function createServer() {
     }
   });
 
-  // Update staff member
+  // Update staff or responder member
   app.patch('/api/admin/staff/:id', requireAdmin, (req: Request, res: Response) => {
     const { id } = req.params;
     const { department, isActive, role } = req.body;
@@ -617,15 +939,6 @@ async function createServer() {
 
   // System Operational Metrics
   app.get('/api/admin/metrics', requireAdmin, (_req: Request, res: Response) => {
-    const allTickets = ticketRepository.getTicketsForUser({
-      id: 'admin',
-      name: 'Admin',
-      email: 'admin@campus.edu',
-      role: 'admin',
-      isActive: true,
-      createdAt: ''
-    }) as any[];
-
     const staff = userStore.getAllStaff();
     const stats = ticketRepository.getStatsForUser({
       id: 'admin',
@@ -645,9 +958,10 @@ async function createServer() {
         assigned: stats.assigned,
         inProgress: stats.inProgress,
         resolved: stats.resolved,
+        reopened: stats.reopened || 0,
         byCategory: stats.byCategory,
         staffCount: staff.length,
-        activeStaffCount: staff.filter(s => s.isActive).length,
+        activeStaffCount: staff.filter((s) => s.isActive).length,
         storageStatus: ticketRepository.getStorageStatus()
       }
     });

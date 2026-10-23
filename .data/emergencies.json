@@ -1,0 +1,201 @@
+{
+  "updatedAt": "2026-10-23T14:59:23.910Z",
+  "nextEmergencyCounter": 104,
+  "emergencies": [
+    {
+      "id": "EMG-101",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "mobileNumber": "+1 (555) 392-8819",
+      "campus": "North Campus",
+      "building": "Science & Engineering Complex",
+      "floor": "2nd Floor",
+      "room": "Physics Lab 202",
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 4.5,
+        "timestamp": "2026-10-23T14:58:17.295Z"
+      },
+      "emergencyType": "medical",
+      "description": "Student experiencing severe asthma attack in physics lab",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T14:58:17.295Z",
+      "assignedResponderZone": "Science & Engineering Complex Immediate Response Sector",
+      "notificationAttempts": [
+        {
+          "id": "notif-EMG-101-med",
+          "channel": "Medical Health Desk",
+          "recipient": "medical.officer@campus.edu (Dr. Anita Rao)",
+          "status": "Delivered",
+          "sentAt": "2026-10-23T14:58:17.295Z",
+          "deliveredAt": "2026-10-23T14:58:17.295Z"
+        }
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-10-23T14:58:17.295Z",
+          "status": "Alert sent",
+          "actor": "Alex Chen (Student)",
+          "details": "Emergency alert confirmed. Prefilled profile and location sent to Medical Health Desk."
+        },
+        {
+          "timestamp": "2026-10-23T14:58:17.305Z",
+          "status": "Acknowledged",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (University Health & Medical Center)",
+          "details": "Medical unit en route with oxygen and nebulizer kit."
+        },
+        {
+          "timestamp": "2026-10-23T14:58:17.306Z",
+          "status": "Responding",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "First responders arrived at Physics Lab 202."
+        },
+        {
+          "timestamp": "2026-10-23T14:58:17.307Z",
+          "status": "Resolved",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "Patient stabilized and transferred to campus health center. Vitals normal."
+        }
+      ],
+      "acknowledgedAt": "2026-10-23T14:58:17.305Z",
+      "acknowledgedBy": "user-responder-medical",
+      "acknowledgedByName": "Dr. Anita Rao (Campus Health Officer)",
+      "respondingAt": "2026-10-23T14:58:17.306Z",
+      "resolvedAt": "2026-10-23T14:58:17.307Z",
+      "resolvedBy": "Dr. Anita Rao (Campus Health Officer)",
+      "closureNotes": "Patient stabilized and transferred to campus health center. Vitals normal."
+    },
+    {
+      "id": "EMG-102",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "mobileNumber": "+1 (555) 392-8819",
+      "campus": "North Campus",
+      "building": "Science & Engineering Complex",
+      "floor": "2nd Floor",
+      "room": "Physics Lab 202",
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 4.5,
+        "timestamp": "2026-10-23T14:58:30.485Z"
+      },
+      "emergencyType": "medical",
+      "description": "Student experiencing severe asthma attack in physics lab",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T14:58:30.486Z",
+      "assignedResponderZone": "Science & Engineering Complex Immediate Response Sector",
+      "notificationAttempts": [
+        {
+          "id": "notif-EMG-102-med",
+          "channel": "Medical Health Desk",
+          "recipient": "medical.officer@campus.edu (Dr. Anita Rao)",
+          "status": "Delivered",
+          "sentAt": "2026-10-23T14:58:30.486Z",
+          "deliveredAt": "2026-10-23T14:58:30.486Z"
+        }
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-10-23T14:58:30.486Z",
+          "status": "Alert sent",
+          "actor": "Alex Chen (Student)",
+          "details": "Emergency alert confirmed. Prefilled profile and location sent to Medical Health Desk."
+        },
+        {
+          "timestamp": "2026-10-23T14:58:30.497Z",
+          "status": "Acknowledged",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (University Health & Medical Center)",
+          "details": "Medical unit en route with oxygen and nebulizer kit."
+        },
+        {
+          "timestamp": "2026-10-23T14:58:30.499Z",
+          "status": "Responding",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "First responders arrived at Physics Lab 202."
+        },
+        {
+          "timestamp": "2026-10-23T14:58:30.500Z",
+          "status": "Resolved",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "Patient stabilized and transferred to campus health center. Vitals normal."
+        }
+      ],
+      "acknowledgedAt": "2026-10-23T14:58:30.497Z",
+      "acknowledgedBy": "user-responder-medical",
+      "acknowledgedByName": "Dr. Anita Rao (Campus Health Officer)",
+      "respondingAt": "2026-10-23T14:58:30.499Z",
+      "resolvedAt": "2026-10-23T14:58:30.500Z",
+      "resolvedBy": "Dr. Anita Rao (Campus Health Officer)",
+      "closureNotes": "Patient stabilized and transferred to campus health center. Vitals normal."
+    },
+    {
+      "id": "EMG-103",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEnrollmentId": "EN-2024-CS-088",
+      "mobileNumber": "+1 (555) 392-8819",
+      "campus": "North Campus",
+      "building": "Science & Engineering Complex",
+      "floor": "2nd Floor",
+      "room": "Physics Lab 202",
+      "gps": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 4.5,
+        "timestamp": "2026-10-23T14:59:23.841Z"
+      },
+      "emergencyType": "medical",
+      "description": "Student experiencing severe asthma attack in physics lab",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T14:59:23.842Z",
+      "assignedResponderZone": "Science & Engineering Complex Immediate Response Sector",
+      "notificationAttempts": [
+        {
+          "id": "notif-EMG-103-med",
+          "channel": "Medical Health Desk",
+          "recipient": "medical.officer@campus.edu (Dr. Anita Rao)",
+          "status": "Delivered",
+          "sentAt": "2026-10-23T14:59:23.842Z",
+          "deliveredAt": "2026-10-23T14:59:23.842Z"
+        }
+      ],
+      "timeline": [
+        {
+          "timestamp": "2026-10-23T14:59:23.842Z",
+          "status": "Alert sent",
+          "actor": "Alex Chen (Student)",
+          "details": "Emergency alert confirmed. Prefilled profile and location sent to Medical Health Desk."
+        },
+        {
+          "timestamp": "2026-10-23T14:59:23.854Z",
+          "status": "Acknowledged",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (University Health & Medical Center)",
+          "details": "Medical unit en route with oxygen and nebulizer kit."
+        },
+        {
+          "timestamp": "2026-10-23T14:59:23.856Z",
+          "status": "Responding",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "First responders arrived at Physics Lab 202."
+        },
+        {
+          "timestamp": "2026-10-23T14:59:23.857Z",
+          "status": "Resolved",
+          "actor": "Dr. Anita Rao (Campus Health Officer) (responder)",
+          "details": "Patient stabilized and transferred to campus health center. Vitals normal."
+        }
+      ],
+      "acknowledgedAt": "2026-10-23T14:59:23.854Z",
+      "acknowledgedBy": "user-responder-medical",
+      "acknowledgedByName": "Dr. Anita Rao (Campus Health Officer)",
+      "respondingAt": "2026-10-23T14:59:23.856Z",
+      "resolvedAt": "2026-10-23T14:59:23.857Z",
+      "resolvedBy": "Dr. Anita Rao (Campus Health Officer)",
+      "closureNotes": "Patient stabilized and transferred to campus health center. Vitals normal."
+    }
+  ]
+}

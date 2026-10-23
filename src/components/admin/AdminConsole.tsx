@@ -37,7 +37,7 @@ export const AdminConsole: React.FC = () => {
   const [newStaffEmail, setNewStaffEmail] = useState('');
   const [newStaffPassword, setNewStaffPassword] = useState('');
   const [newStaffDept, setNewStaffDept] = useState<Department>(DEPARTMENTS[0]);
-  const [newStaffRole, setNewStaffRole] = useState<'staff' | 'admin'>('staff');
+  const [newStaffRole, setNewStaffRole] = useState<'staff' | 'admin' | 'responder'>('staff');
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -422,10 +422,11 @@ export const AdminConsole: React.FC = () => {
                 <label className="block font-semibold text-slate-700 mb-1">Role Type</label>
                 <select
                   value={newStaffRole}
-                  onChange={(e) => setNewStaffRole(e.target.value as 'staff' | 'admin')}
+                  onChange={(e) => setNewStaffRole(e.target.value as any)}
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 font-medium"
                 >
                   <option value="staff">Facilities Staff Member</option>
+                  <option value="responder">Campus Emergency Responder (Security / Medical)</option>
                   <option value="admin">System Administrator</option>
                 </select>
               </div>
