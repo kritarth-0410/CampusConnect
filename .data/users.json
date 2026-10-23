@@ -1,0 +1,194 @@
+{
+  "updatedAt": "2026-10-23T11:21:49.992Z",
+  "users": [
+    {
+      "id": "user-admin-1",
+      "name": "Facilities Administrator",
+      "email": "admin@campus.edu",
+      "passwordHash": "48f739a4e17c95ec27403def066734483080a1c089e3469df310a60754fb842d235dd3ba28a554cc48f4c0bec91e20c1a8735137138f42aa38e85182d1a094de",
+      "salt": "70ca59cd89dbc06ef50e9f95c55214c5",
+      "role": "admin",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.002Z"
+    },
+    {
+      "id": "user-staff-1",
+      "name": "Sarah Martinez (Triage Supervisor)",
+      "email": "sarah.supervisor@campus.edu",
+      "passwordHash": "5428cce58eb4bd31dc837ef02833fcb0fa2564a027af6d4d7c14f882684766bd824448e89119bb4f79db10b9cc72b4ba1a299e3807de56271b7a8371f20c0b4c",
+      "salt": "fa76b5d52b9e9554685908da7b82523f",
+      "role": "staff",
+      "department": "Plumbing Maintenance Department",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.009Z"
+    },
+    {
+      "id": "user-staff-2",
+      "name": "Carlos Rivera (Master Plumber)",
+      "email": "carlos.rivera@campus.edu",
+      "passwordHash": "ca778d6d121b7afa0c9f24269a28145b8115679901997e6ba201c4b4b2e73dd8eaebe807b59fa2a455c04a0185091391acfc68e1f388353c86356bc4f87f4bd4",
+      "salt": "bbdcb4104bc20b8476948b903873e72f",
+      "role": "staff",
+      "department": "Plumbing Maintenance Department",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.016Z"
+    },
+    {
+      "id": "user-staff-3",
+      "name": "Marcus Vance (Senior Electrician)",
+      "email": "marcus.vance@campus.edu",
+      "passwordHash": "6acf018bf45a7d9724bf6371dcd7ac2eba5b5542027b3803a40e241c0f4f0e535d13f5e1bc2146ac37b74f5a6bac011fe9f60b6792b5a53975ba6ad178da8303",
+      "salt": "fa90ef95f0d407ed56b789e14d3ea3f5",
+      "role": "staff",
+      "department": "Electrical Systems & Safety Division",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.023Z"
+    },
+    {
+      "id": "user-staff-4",
+      "name": "Elena Gomez (Custodial Lead)",
+      "email": "elena.gomez@campus.edu",
+      "passwordHash": "630760b3af1b35f307d17728e3c4f3a70af04d282d06df2ed69db1a1a19d5aa5b6d3844437e409ef175aef4defbdb794ef6dd1f31e0be34862ab7b436045f43f",
+      "salt": "1d19a274db5c89c696a352201d8613bd",
+      "role": "staff",
+      "department": "Campus Custodial & Sanitation Services",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.029Z"
+    },
+    {
+      "id": "user-staff-5",
+      "name": "Maya Lin (NOC Wireless Engineer)",
+      "email": "maya.lin@campus.edu",
+      "passwordHash": "35da361516c4c0afad64843ce2fd02e56c4182757e231a36d2c66c5fecda65b3929eac5e66e1f7a4fdc628df1429ebcdbb34775331fcfd5734598847229bb295",
+      "salt": "13e6b31675f9f1178186657cb7c9b947",
+      "role": "staff",
+      "department": "IT & Network Infrastructure Team",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.036Z"
+    },
+    {
+      "id": "user-student-1",
+      "name": "Alex Chen",
+      "email": "alex.chen@campus.edu",
+      "passwordHash": "d52702ce77e7662653c5632b8a54b20816661d0e96d174803c32bf3e0d70de0a1d10748a70f45211e3490a591da2b0cd52630cbad17b5210b88460755c6382ce",
+      "salt": "5faf593726bdf4bc26c7ebb6f26c9f9f",
+      "role": "student",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.043Z"
+    },
+    {
+      "id": "user-student-2",
+      "name": "Priya Patel",
+      "email": "priya.patel@campus.edu",
+      "passwordHash": "6419d0afa11311291985104f070c9ec3327f049c910ef66c99020926b69ae3f750a3c070c4349433b38375561a855dbf5e7673a08b0ca956953133bdf1e0e876",
+      "salt": "e74e6f3ebea46a209630e5734633f473",
+      "role": "student",
+      "isActive": true,
+      "createdAt": "2026-10-23T11:17:22.050Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "eda2128e06c44792bd010e76587e4771986315586cf4d80e05e024648107adef",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T11:17:22.061Z",
+      "expiresAt": "2026-11-22T11:17:22.061Z"
+    },
+    {
+      "token": "c2695ef07cc51ea7203a387953f0ffeb5eb7aedad149067835d5174a18a178f5",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T11:17:22.076Z",
+      "expiresAt": "2026-11-22T11:17:22.076Z"
+    },
+    {
+      "token": "a30b6417a6aa731d81f3293e4a5281524a5be84d2e763be96f75593f65d808e7",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T11:17:22.084Z",
+      "expiresAt": "2026-11-22T11:17:22.084Z"
+    },
+    {
+      "token": "6aa31e685e93f1bac690277b0b40581ecc2e38e4a57fb78d9ae8283c6115e5b5",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T11:17:22.092Z",
+      "expiresAt": "2026-11-22T11:17:22.092Z"
+    },
+    {
+      "token": "a93747a2e9ea18f664c2bc67f521b7aefd8731e573f6a5797ea76b7bb691a73a",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T11:19:54.806Z",
+      "expiresAt": "2026-11-22T11:19:54.806Z"
+    },
+    {
+      "token": "77da4c17361a6faa1e1e17da8f59648ed4b0d9bec8477ba704c36b6b86d847f2",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T11:19:54.822Z",
+      "expiresAt": "2026-11-22T11:19:54.822Z"
+    },
+    {
+      "token": "da2623595d39e31704a23e3a7ebda1ff5c731fcc29928f2f5bc617c0a6240b8c",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T11:19:54.830Z",
+      "expiresAt": "2026-11-22T11:19:54.830Z"
+    },
+    {
+      "token": "ad8b0e6d69afb3785e36c13aaf3f2bacc953edc9cac879b34836a5d7bd3a68d0",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T11:19:54.837Z",
+      "expiresAt": "2026-11-22T11:19:54.837Z"
+    },
+    {
+      "token": "379da04c102d35486eb9ce50ecb69862bd438a4a26db5d3bd2b2841dadb212f2",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T11:20:23.247Z",
+      "expiresAt": "2026-11-22T11:20:23.247Z"
+    },
+    {
+      "token": "85382937e84eab9e60bc4fa3d8c964c5fe7f2eb2bda4bf9fa2acd3551cfe06dc",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T11:21:31.864Z",
+      "expiresAt": "2026-11-22T11:21:31.864Z"
+    },
+    {
+      "token": "31f4f47edd71270f65a07c8d43c9f4a96c02a35d25374d939a58a3a3cf68916a",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T11:21:31.887Z",
+      "expiresAt": "2026-11-22T11:21:31.887Z"
+    },
+    {
+      "token": "33b3e71d9f7d3da2e9b5157854b5958a26d9760dbc85449dc2edbb201dbb8623",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T11:21:31.895Z",
+      "expiresAt": "2026-11-22T11:21:31.895Z"
+    },
+    {
+      "token": "7293321ebd1c80077f213406b12f3ec34bdb1307dfc1f509bec15ce203bd2000",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T11:21:31.905Z",
+      "expiresAt": "2026-11-22T11:21:31.905Z"
+    },
+    {
+      "token": "edac698a7752aaa32d7e9ea7b50de7196760bac83ef1db3d3693525c7bb13759",
+      "userId": "user-student-1",
+      "createdAt": "2026-10-23T11:21:49.959Z",
+      "expiresAt": "2026-11-22T11:21:49.959Z"
+    },
+    {
+      "token": "4a378216d2b9f7d91a66b02e0c1cf12629c2931e89be1103682de884cb1faadc",
+      "userId": "user-staff-1",
+      "createdAt": "2026-10-23T11:21:49.976Z",
+      "expiresAt": "2026-11-22T11:21:49.976Z"
+    },
+    {
+      "token": "0151ffa5d1d10e1cdfc8561cec4df7eed725aa9f403407ceb480fd224b843c4e",
+      "userId": "user-admin-1",
+      "createdAt": "2026-10-23T11:21:49.983Z",
+      "expiresAt": "2026-11-22T11:21:49.983Z"
+    },
+    {
+      "token": "f1f4378dbccc25d99b48b024fc9974c7e7f01d9f90ea0bbcfe1ee9f29eff8ecf",
+      "userId": "user-student-2",
+      "createdAt": "2026-10-23T11:21:49.992Z",
+      "expiresAt": "2026-11-22T11:21:49.992Z"
+    }
+  ]
+}

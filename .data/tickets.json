@@ -1,0 +1,667 @@
+{
+  "updatedAt": "2026-10-23T11:21:50.015Z",
+  "storageType": "file-backed-json-store",
+  "nextIdCounter": 1010,
+  "tickets": [
+    {
+      "id": "CC-1001",
+      "title": "Continuous pipe leak under 2nd floor sink",
+      "description": "Water is dripping steadily onto the tile floor from the second sink pipe in the west wing washroom. Floor is slippery.",
+      "rawStudentInput": "Hey washroom near room 204 has water dripping from the sink pipe onto the floor someone might slip",
+      "category": "Plumbing",
+      "categorySource": "ai_suggested",
+      "location": "West Wing Men's Restroom 2nd Floor",
+      "building": "Science & Engineering Complex",
+      "roomOrArea": "Restroom opposite Room 204",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "status": "In Progress",
+      "createdAt": "2026-10-23T06:43:55.956Z",
+      "updatedAt": "2026-10-23T11:21:49.992Z",
+      "aiAnalysis": {
+        "suggestedCategory": "Plumbing",
+        "confidence": "High",
+        "confidenceScore": 0.94,
+        "conciseSummary": "Continuous pipe leak under washbasin causing slip hazard.",
+        "recommendedDepartment": "Plumbing Maintenance Department",
+        "missingDetailsIdentified": [],
+        "followUpQuestions": [],
+        "urgencyAssessment": "Moderate",
+        "analyzedAt": "2026-10-23T06:43:55.956Z"
+      },
+      "assignment": {
+        "department": "Plumbing Maintenance Department",
+        "assignedTo": "Carlos Rivera (Master Plumber)",
+        "assignedAt": "2026-10-23T07:33:55.956Z",
+        "assignedBy": "Campus Dispatch Triage",
+        "priority": "High",
+        "notes": "Dispatched with replacement P-trap seal and warning cones."
+      },
+      "statusHistory": [
+        {
+          "id": "h-1",
+          "ticketId": "CC-1001",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T06:43:55.956Z",
+          "changedBy": "Student Portal (Alex Chen)",
+          "notes": "Complaint submitted with high AI confidence triage."
+        },
+        {
+          "id": "h-2",
+          "ticketId": "CC-1001",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T07:13:55.956Z",
+          "changedBy": "Triage Supervisor Sarah M.",
+          "notes": "Verified location and slip hazard potential."
+        },
+        {
+          "id": "h-3",
+          "ticketId": "CC-1001",
+          "fromStatus": "Under Review",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T07:33:55.956Z",
+          "changedBy": "Triage Supervisor Sarah M.",
+          "notes": "Assigned to Plumbing Maintenance Division."
+        },
+        {
+          "id": "h-4",
+          "ticketId": "CC-1001",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T08:43:55.956Z",
+          "changedBy": "Technician Carlos Rivera",
+          "notes": "On site, valve shut off, currently fitting new pipe connector."
+        }
+      ],
+      "studentId": "user-student-1",
+      "internalNotes": [
+        {
+          "id": "note-1792754242092-u91p",
+          "ticketId": "CC-1001",
+          "authorId": "user-staff-1",
+          "authorName": "Sarah Martinez (Triage Supervisor)",
+          "content": "Confidential test note: Replaced valve seal on west wing riser.",
+          "createdAt": "2026-10-23T11:17:22.092Z"
+        },
+        {
+          "id": "note-1792754394838-cujz",
+          "ticketId": "CC-1001",
+          "authorId": "user-staff-1",
+          "authorName": "Sarah Martinez (Triage Supervisor)",
+          "content": "Confidential test note: Replaced valve seal on west wing riser.",
+          "createdAt": "2026-10-23T11:19:54.838Z"
+        },
+        {
+          "id": "note-1792754491906-xkej",
+          "ticketId": "CC-1001",
+          "authorId": "user-staff-1",
+          "authorName": "Sarah Martinez (Triage Supervisor)",
+          "content": "Confidential test note: Replaced valve seal on west wing riser.",
+          "createdAt": "2026-10-23T11:21:31.906Z"
+        },
+        {
+          "id": "note-1792754509992-pa4y",
+          "ticketId": "CC-1001",
+          "authorId": "user-staff-1",
+          "authorName": "Sarah Martinez (Triage Supervisor)",
+          "content": "Confidential test note: Replaced valve seal on west wing riser.",
+          "createdAt": "2026-10-23T11:21:49.992Z"
+        }
+      ]
+    },
+    {
+      "id": "CC-1002",
+      "title": "Lecture hall 101 power socket sparking and tripped breaker",
+      "description": "The surge strip plug at desk row 3 sparked when a student plugged in their laptop. Burning ozone smell noticed.",
+      "rawStudentInput": "There was a spark and popping sound from row 3 plug in hall 101 during physics lecture. Outlet smells burnt.",
+      "category": "Electricity",
+      "categorySource": "ai_suggested",
+      "location": "Lecture Hall 101, Row 3 Desk Strip",
+      "building": "Main Academic Quad",
+      "roomOrArea": "Hall 101",
+      "studentName": "Priya Patel",
+      "studentEmail": "p.patel@campus.edu",
+      "status": "Assigned",
+      "createdAt": "2026-10-23T07:48:55.956Z",
+      "updatedAt": "2026-10-23T08:18:55.956Z",
+      "aiAnalysis": {
+        "suggestedCategory": "Electricity",
+        "confidence": "High",
+        "confidenceScore": 0.98,
+        "conciseSummary": "Power strip electrical arc spark and ozone odor in lecture hall.",
+        "recommendedDepartment": "Electrical Systems & Safety Division",
+        "missingDetailsIdentified": [],
+        "followUpQuestions": [],
+        "urgencyAssessment": "Safety Hazard",
+        "analyzedAt": "2026-10-23T07:48:55.956Z"
+      },
+      "assignment": {
+        "department": "Electrical Systems & Safety Division",
+        "assignedTo": "Marcus Vance (Senior Electrician)",
+        "assignedAt": "2026-10-23T08:18:55.956Z",
+        "assignedBy": "Duty Dispatcher",
+        "priority": "Emergency",
+        "notes": "Circuit 12B breaker locked out remotely, electrician inspecting wiring."
+      },
+      "statusHistory": [
+        {
+          "id": "h-5",
+          "ticketId": "CC-1002",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T07:48:55.956Z",
+          "changedBy": "Student Portal (Priya Patel)",
+          "notes": "Urgent electrical hazard reported."
+        },
+        {
+          "id": "h-6",
+          "ticketId": "CC-1002",
+          "fromStatus": "Submitted",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T08:18:55.956Z",
+          "changedBy": "Safety Officer James K.",
+          "notes": "Fast-tracked directly to Electrical Systems due to electrical safety rating."
+        }
+      ],
+      "studentId": "user-student-1",
+      "internalNotes": []
+    },
+    {
+      "id": "CC-1003",
+      "title": "Recycling station overflow and sticky beverage spill",
+      "description": "Large soda cups and food containers spilled across floor by the central courtyard entry stairs. High foot traffic.",
+      "rawStudentInput": "Huge spill near courtyard stairs and trash bins are overflowing with drink cups everywhere",
+      "category": "Cleanliness",
+      "categorySource": "student",
+      "location": "Courtyard Entry Foyer, Ground Floor",
+      "building": "Student Union Center",
+      "roomOrArea": "Stairwell B Entrance",
+      "studentName": "Jordan Taylor",
+      "studentEmail": "j.taylor@campus.edu",
+      "status": "Under Review",
+      "createdAt": "2026-10-23T08:13:55.956Z",
+      "updatedAt": "2026-10-23T08:33:55.956Z",
+      "aiAnalysis": {
+        "suggestedCategory": "Cleanliness",
+        "confidence": "High",
+        "confidenceScore": 0.92,
+        "conciseSummary": "Overfilled waste receptacles and sticky liquid spill at primary stairwell.",
+        "recommendedDepartment": "Campus Custodial & Sanitation Services",
+        "missingDetailsIdentified": [],
+        "followUpQuestions": [],
+        "urgencyAssessment": "Moderate",
+        "analyzedAt": "2026-10-23T08:13:55.956Z"
+      },
+      "statusHistory": [
+        {
+          "id": "h-7",
+          "ticketId": "CC-1003",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T08:13:55.956Z",
+          "changedBy": "Student Portal (Jordan Taylor)",
+          "notes": "Cleanliness service request logged."
+        },
+        {
+          "id": "h-8",
+          "ticketId": "CC-1003",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T08:33:55.956Z",
+          "changedBy": "Shift Supervisor Elena Gomez",
+          "notes": "Custodial team lead notified for sweep."
+        }
+      ],
+      "studentId": "user-student-1",
+      "internalNotes": []
+    },
+    {
+      "id": "CC-1004",
+      "title": "eduroam Wi-Fi drops continually in 3rd floor quiet zone",
+      "description": "Access Point AP-North-3F appears to be failing DHCP leases or rejecting auth. 20+ study desks unable to connect.",
+      "rawStudentInput": "Internet keeps disconnecting every minute on the 3rd floor library. None of our laptops can stay on eduroam.",
+      "category": "Internet Connectivity",
+      "categorySource": "ai_suggested",
+      "location": "3rd Floor North Quiet Study Wing",
+      "building": "University Memorial Library",
+      "roomOrArea": "Desks 301-325",
+      "studentName": "Devon Lee",
+      "studentEmail": "devon.l@campus.edu",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T03:43:55.956Z",
+      "updatedAt": "2026-10-23T08:03:55.956Z",
+      "resolvedAt": "2026-10-23T08:03:55.956Z",
+      "aiAnalysis": {
+        "suggestedCategory": "Internet Connectivity",
+        "confidence": "High",
+        "confidenceScore": 0.95,
+        "conciseSummary": "Repeated wireless disconnection and DHCP negotiation failures on Library 3F AP.",
+        "recommendedDepartment": "IT & Network Infrastructure Team",
+        "missingDetailsIdentified": [],
+        "followUpQuestions": [],
+        "urgencyAssessment": "Moderate",
+        "analyzedAt": "2026-10-23T03:43:55.956Z"
+      },
+      "assignment": {
+        "department": "IT & Network Infrastructure Team",
+        "assignedTo": "NOC Tech Maya Lin",
+        "assignedAt": "2026-10-23T04:23:55.956Z",
+        "assignedBy": "Automated IT Ticketing",
+        "priority": "High",
+        "notes": "Remote diagnostics performed on Cisco AP-302."
+      },
+      "statusHistory": [
+        {
+          "id": "h-9",
+          "ticketId": "CC-1004",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T03:43:55.956Z",
+          "changedBy": "Student Portal (Devon Lee)",
+          "notes": "Network connectivity ticket generated."
+        },
+        {
+          "id": "h-10",
+          "ticketId": "CC-1004",
+          "fromStatus": "Submitted",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T04:23:55.956Z",
+          "changedBy": "Network Operations Desk",
+          "notes": "Routed to campus wireless engineering."
+        },
+        {
+          "id": "h-11",
+          "ticketId": "CC-1004",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T06:33:55.956Z",
+          "changedBy": "NOC Tech Maya Lin",
+          "notes": "Rebooted local PoE switch port and updated AP firmware."
+        },
+        {
+          "id": "h-12",
+          "ticketId": "CC-1004",
+          "fromStatus": "In Progress",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T08:03:55.956Z",
+          "changedBy": "NOC Tech Maya Lin",
+          "notes": "AP rebooted and ping stability verified across all 24 connected clients."
+        }
+      ],
+      "studentId": "user-student-1",
+      "internalNotes": []
+    },
+    {
+      "id": "CC-1005",
+      "title": "Test sink leak",
+      "description": "Test sink leak",
+      "rawStudentInput": "Test sink leak",
+      "category": "Plumbing",
+      "categorySource": "student",
+      "location": "2nd Floor",
+      "building": "Science & Engineering Complex",
+      "status": "Submitted",
+      "createdAt": "2026-10-23T09:04:31.055Z",
+      "updatedAt": "2026-10-23T09:04:31.055Z",
+      "statusHistory": [
+        {
+          "id": "hist-1792746271055-gok7",
+          "ticketId": "CC-1005",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T09:04:31.055Z",
+          "changedBy": "Student (Anonymous)",
+          "notes": "Complaint submitted through student portal."
+        }
+      ],
+      "duplicateWarnings": [
+        {
+          "ticketId": "CC-1001",
+          "title": "Continuous pipe leak under 2nd floor sink",
+          "category": "Plumbing",
+          "location": "Science & Engineering Complex - West Wing Men's Restroom 2nd Floor",
+          "status": "In Progress",
+          "similarityScore": 0.98,
+          "matchReason": "Same campus building (Science & Engineering Complex) • Similar room/area (West Wing Men's Restroom 2nd Floor) • Significant issue description overlap (100%)"
+        }
+      ],
+      "studentFollowUpAnswers": {},
+      "staffNotes": [],
+      "studentId": "user-student-1",
+      "internalNotes": []
+    },
+    {
+      "id": "CC-1006",
+      "title": "Sink leaking continuously in lab 3",
+      "description": "Sink leaking continuously in lab 3",
+      "rawStudentInput": "Sink leaking continuously in lab 3",
+      "category": "Plumbing",
+      "categorySource": "student",
+      "location": "Lab 305",
+      "building": "Science & Engineering Complex",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T11:17:22.093Z",
+      "updatedAt": "2026-10-23T11:17:22.095Z",
+      "statusHistory": [
+        {
+          "id": "hist-1792754242093-k1dr",
+          "ticketId": "CC-1006",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T11:17:22.093Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1",
+          "notes": "Complaint submitted through student portal."
+        },
+        {
+          "id": "hist-1792754242094-r3d4",
+          "ticketId": "CC-1006",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T11:17:22.094Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Verified on site"
+        },
+        {
+          "id": "hist-1792754242094-soei",
+          "ticketId": "CC-1006",
+          "fromStatus": "Under Review",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T11:17:22.094Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Assigned to plumber"
+        },
+        {
+          "id": "hist-1792754242094-tgu6",
+          "ticketId": "CC-1006",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T11:17:22.094Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work commenced"
+        },
+        {
+          "id": "hist-1792754242095-en23",
+          "ticketId": "CC-1006",
+          "fromStatus": "In Progress",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:17:22.095Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work completed and tested"
+        },
+        {
+          "id": "hist-1792754242095-84an",
+          "ticketId": "CC-1006",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:17:22.095Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Staff duplicate review: CONFIRMED - Confirmed identical leak to CC-1001"
+        }
+      ],
+      "duplicateWarnings": [],
+      "studentFollowUpAnswers": {},
+      "internalNotes": [],
+      "resolvedAt": "2026-10-23T11:17:22.095Z",
+      "duplicateReviewed": true,
+      "duplicateReviewDecision": "confirmed",
+      "duplicateReviewNote": "Confirmed identical leak to CC-1001",
+      "duplicateReviewedBy": "Sarah Martinez (Triage Supervisor)"
+    },
+    {
+      "id": "CC-1007",
+      "title": "Sink leaking continuously in lab 3",
+      "description": "Sink leaking continuously in lab 3",
+      "rawStudentInput": "Sink leaking continuously in lab 3",
+      "category": "Plumbing",
+      "categorySource": "student",
+      "location": "Lab 305",
+      "building": "Science & Engineering Complex",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T11:19:54.838Z",
+      "updatedAt": "2026-10-23T11:19:54.840Z",
+      "statusHistory": [
+        {
+          "id": "hist-1792754394839-2t71",
+          "ticketId": "CC-1007",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T11:19:54.838Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1",
+          "notes": "Complaint submitted through student portal."
+        },
+        {
+          "id": "hist-1792754394839-5nmo",
+          "ticketId": "CC-1007",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T11:19:54.839Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Verified on site"
+        },
+        {
+          "id": "hist-1792754394839-bwqw",
+          "ticketId": "CC-1007",
+          "fromStatus": "Under Review",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T11:19:54.839Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Assigned to plumber"
+        },
+        {
+          "id": "hist-1792754394840-d1yg",
+          "ticketId": "CC-1007",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T11:19:54.840Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work commenced"
+        },
+        {
+          "id": "hist-1792754394840-pwtj",
+          "ticketId": "CC-1007",
+          "fromStatus": "In Progress",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:19:54.840Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work completed and tested"
+        },
+        {
+          "id": "hist-1792754394840-4p9p",
+          "ticketId": "CC-1007",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:19:54.840Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Staff duplicate review: CONFIRMED - Confirmed identical leak to CC-1001"
+        }
+      ],
+      "duplicateWarnings": [],
+      "studentFollowUpAnswers": {},
+      "internalNotes": [],
+      "resolvedAt": "2026-10-23T11:19:54.840Z",
+      "duplicateReviewed": true,
+      "duplicateReviewDecision": "confirmed",
+      "duplicateReviewNote": "Confirmed identical leak to CC-1001",
+      "duplicateReviewedBy": "Sarah Martinez (Triage Supervisor)"
+    },
+    {
+      "id": "CC-1008",
+      "title": "Sink leaking continuously in lab 3",
+      "description": "Sink leaking continuously in lab 3",
+      "rawStudentInput": "Sink leaking continuously in lab 3",
+      "category": "Plumbing",
+      "categorySource": "student",
+      "location": "Lab 305",
+      "building": "Science & Engineering Complex",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T11:21:31.907Z",
+      "updatedAt": "2026-10-23T11:21:31.912Z",
+      "statusHistory": [
+        {
+          "id": "hist-1792754491907-bwew",
+          "ticketId": "CC-1008",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T11:21:31.907Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1",
+          "notes": "Complaint submitted through student portal."
+        },
+        {
+          "id": "hist-1792754491909-zeh1",
+          "ticketId": "CC-1008",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T11:21:31.909Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Verified on site"
+        },
+        {
+          "id": "hist-1792754491910-jpzz",
+          "ticketId": "CC-1008",
+          "fromStatus": "Under Review",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T11:21:31.910Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Assigned to plumber"
+        },
+        {
+          "id": "hist-1792754491910-abo2",
+          "ticketId": "CC-1008",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T11:21:31.910Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work commenced"
+        },
+        {
+          "id": "hist-1792754491911-vacz",
+          "ticketId": "CC-1008",
+          "fromStatus": "In Progress",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:21:31.911Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work completed and tested"
+        },
+        {
+          "id": "hist-1792754491912-jwnp",
+          "ticketId": "CC-1008",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:21:31.912Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Staff duplicate review: CONFIRMED - Confirmed identical leak to CC-1001"
+        }
+      ],
+      "duplicateWarnings": [],
+      "studentFollowUpAnswers": {},
+      "internalNotes": [],
+      "resolvedAt": "2026-10-23T11:21:31.911Z",
+      "duplicateReviewed": true,
+      "duplicateReviewDecision": "confirmed",
+      "duplicateReviewNote": "Confirmed identical leak to CC-1001",
+      "duplicateReviewedBy": "Sarah Martinez (Triage Supervisor)"
+    },
+    {
+      "id": "CC-1009",
+      "title": "Sink leaking continuously in lab 3",
+      "description": "Sink leaking continuously in lab 3",
+      "rawStudentInput": "Sink leaking continuously in lab 3",
+      "category": "Plumbing",
+      "categorySource": "student",
+      "location": "Lab 305",
+      "building": "Science & Engineering Complex",
+      "studentId": "user-student-1",
+      "studentName": "Alex Chen",
+      "studentEmail": "alex.chen@campus.edu",
+      "status": "Resolved",
+      "createdAt": "2026-10-23T11:21:49.993Z",
+      "updatedAt": "2026-10-23T11:21:50.015Z",
+      "statusHistory": [
+        {
+          "id": "hist-1792754509993-lk93",
+          "ticketId": "CC-1009",
+          "toStatus": "Submitted",
+          "changedAt": "2026-10-23T11:21:49.993Z",
+          "changedBy": "Alex Chen (Student)",
+          "changedById": "user-student-1",
+          "notes": "Complaint submitted through student portal."
+        },
+        {
+          "id": "hist-1792754509997-hr28",
+          "ticketId": "CC-1009",
+          "fromStatus": "Submitted",
+          "toStatus": "Under Review",
+          "changedAt": "2026-10-23T11:21:49.997Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Verified on site"
+        },
+        {
+          "id": "hist-1792754509998-nxi3",
+          "ticketId": "CC-1009",
+          "fromStatus": "Under Review",
+          "toStatus": "Assigned",
+          "changedAt": "2026-10-23T11:21:49.998Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Assigned to plumber"
+        },
+        {
+          "id": "hist-1792754510001-72r1",
+          "ticketId": "CC-1009",
+          "fromStatus": "Assigned",
+          "toStatus": "In Progress",
+          "changedAt": "2026-10-23T11:21:50.001Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work commenced"
+        },
+        {
+          "id": "hist-1792754510013-cys9",
+          "ticketId": "CC-1009",
+          "fromStatus": "In Progress",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:21:50.013Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Work completed and tested"
+        },
+        {
+          "id": "hist-1792754510015-yx5l",
+          "ticketId": "CC-1009",
+          "toStatus": "Resolved",
+          "changedAt": "2026-10-23T11:21:50.015Z",
+          "changedBy": "Sarah Martinez (Triage Supervisor)",
+          "changedById": "user-staff-1",
+          "notes": "Staff duplicate review: CONFIRMED - Confirmed identical leak to CC-1001"
+        }
+      ],
+      "duplicateWarnings": [],
+      "studentFollowUpAnswers": {},
+      "internalNotes": [],
+      "resolvedAt": "2026-10-23T11:21:50.013Z",
+      "duplicateReviewed": true,
+      "duplicateReviewDecision": "confirmed",
+      "duplicateReviewNote": "Confirmed identical leak to CC-1001",
+      "duplicateReviewedBy": "Sarah Martinez (Triage Supervisor)"
+    }
+  ]
+}
